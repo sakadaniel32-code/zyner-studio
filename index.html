@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zyner Studio · Brand document builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0d0d0d;--ink2:#161616;--ink3:#202020;--line:#2b2b2b;--txt:#ece8e2;--mute:#9a948c;--or:#d2571f;--or2:#e8763c}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--ink);color:var(--txt);font:14px/1.5 Inter,system-ui,sans-serif}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.06;z-index:0;
+ background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+button,input,textarea,select{font:inherit;color:inherit}
+.app{position:relative;z-index:1;display:grid;grid-template-columns:440px 1fr;grid-template-rows:auto 1fr;height:100vh}
+header{grid-column:1/-1;display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--line);background:rgba(13,13,13,.92)}
+.logo{font-family:Archivo;font-stretch:70%;font-weight:800;font-size:22px;letter-spacing:.02em;text-transform:uppercase}
+.logo span{color:var(--or)}
+.sp{flex:1}
+.btn{border:1px solid var(--line);background:var(--ink2);border-radius:999px;padding:9px 16px;cursor:pointer;font-weight:600;white-space:nowrap}
+.btn:hover{border-color:#444}
+.btn.pri{background:var(--or);border-color:var(--or);color:#160a04}
+.btn.pri:hover{background:var(--or2)}
+.btn.sm{padding:5px 11px;font-size:12px}
+.btn:disabled{opacity:.5;cursor:wait}
+aside{border-right:1px solid var(--line);overflow:auto;display:flex;flex-direction:column;min-height:0}
+.tabs{flex:none;display:flex;gap:4px;padding:10px 12px;border-bottom:1px solid var(--line);overflow-x:auto;position:sticky;top:0;background:var(--ink);z-index:2}
+.tab{padding:7px 12px;border-radius:999px;cursor:pointer;color:var(--mute);font-weight:600;font-size:13px;white-space:nowrap;border:0;background:none}
+.tab.on{background:var(--ink3);color:var(--txt)}
+.panel{flex:none;display:none;padding:16px 18px 40px}
+.panel.on{display:block}
+h3{font-family:Archivo;font-stretch:75%;font-weight:800;text-transform:uppercase;letter-spacing:.03em;font-size:17px;margin:4px 0 4px}
+.hint{color:var(--mute);font-size:12.5px;margin:0 0 14px}
+label{display:block;font-size:12px;color:var(--mute);margin:12px 0 5px;font-weight:600}
+input[type=text],input[type=password],textarea,select{width:100%;background:var(--ink2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--or)}
+textarea{min-height:90px;resize:vertical}
+textarea.big{min-height:240px}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.card{border:1px solid var(--line);border-radius:14px;padding:12px;margin:12px 0;background:var(--ink2)}
+.slot{display:flex;align-items:center;gap:12px;padding:10px;border:1px dashed #3a3a3a;border-radius:12px;margin:8px 0}
+.thumb{width:84px;height:56px;border-radius:8px;background:#e9e6e0 center/contain no-repeat;flex:none}
+.thumb.dk{background-color:#1c1c1c}
+.slot .t{flex:1;min-width:0}.slot .t b{display:block;font-size:13px}.slot .t small{color:var(--mute)}
+.filebtn{position:relative;overflow:hidden}.filebtn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.sw{width:34px;height:34px;border-radius:8px;border:1px solid #333;flex:none;padding:0}
+input[type=color]{background:none;border:0;cursor:pointer}
+.chk{display:flex;align-items:center;gap:8px;margin:7px 0;font-size:13px}
+.chk input{accent-color:var(--or)}
+.copyblock{border-top:1px solid var(--line);padding-top:10px;margin-top:14px}
+.copyblock .hd{display:flex;align-items:center;justify-content:space-between}
+.copyblock .hd b{font-size:13px}
+.files{margin:8px 0;padding:0;list-style:none}.files li{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;padding:6px 10px;background:var(--ink3);border-radius:8px;margin:4px 0}
+.x{cursor:pointer;color:var(--mute);border:0;background:none;font-size:16px}
+main{overflow:auto;padding:24px;min-height:0}
+#doc{max-width:1100px;margin:0 auto}
+.pgwrap{position:relative;width:100%;aspect-ratio:16/9;margin:0 0 22px;border-radius:6px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.pgwrap .pg{position:absolute;left:0;top:0;transform:scale(var(--s,0.5));transform-origin:0 0}
+.pgnum{color:var(--mute);font-size:11px;margin:-16px 0 10px}
+#status{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#1d1d1d;border:1px solid #333;padding:10px 16px;border-radius:999px;z-index:20;display:none;max-width:90vw;text-align:center}
+#status.err{border-color:#b33;color:#ffb4a8}
+.mobswitch{display:none}
+/* ---------- document pages ---------- */
+.pg{width:1280px;height:720px;overflow:hidden;position:relative;font-family:Inter,sans-serif;color:var(--p-ink);background:var(--p-paper)}
+.pg.dark{background:var(--p-dark);color:#f3f1ec}
+.pg.acc{background:var(--p-acc);color:#fff}
+.pg .lab{position:absolute;left:72px;top:52px;font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;opacity:.6}
+.pg .no{position:absolute;right:72px;top:52px;font-size:13px;font-weight:600;opacity:.6}
+.pg .foot{position:absolute;left:72px;right:72px;bottom:44px;display:flex;justify-content:space-between;font-size:12px;opacity:.5}
+.pg h1,.pg h2{font-family:Archivo;font-stretch:72%;font-weight:800;line-height:.92;margin:0;letter-spacing:-.005em}
+.pg h1{font-size:118px;text-transform:uppercase}
+.pg h2{font-size:64px}
+.pg .body{font-size:19px;line-height:1.55;max-width:470px;margin-top:26px;opacity:.86}
+.pg .body p{margin:0 0 14px}
+.pg .acct{color:var(--p-acc)}
+.pg img{display:block;max-width:100%;max-height:100%;object-fit:contain}
+.pg .wht{filter:brightness(0) invert(1)}
+.cover .mark{position:absolute;right:-90px;top:60px;width:640px;height:640px;opacity:.95}
+.cover .mark img{width:100%;height:100%}
+.cover .lk{position:absolute;left:72px;top:110px;height:64px;max-width:380px}
+.cover .tt{position:absolute;left:72px;bottom:150px}
+.cover .tt .sub{font-size:20px;margin-top:22px;opacity:.75}
+.div .big{position:absolute;left:72px;bottom:120px}
+.div .n{font-family:Archivo;font-stretch:70%;font-weight:800;font-size:300px;line-height:.8;position:absolute;right:60px;bottom:60px;opacity:.18}
+.split{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr}
+.split .l{padding:150px 40px 0 72px}
+.split .r{display:flex;align-items:center;justify-content:center;padding:70px}
+.split .r.tile{background:var(--tile,#e9e6e0)}
+.split .r img{max-height:300px}
+.pp .r img.wm{max-height:250px}
+.pp .icon{width:120px;height:120px;border-radius:28px;overflow:hidden;margin-top:30px;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.pp .icon img{width:100%;height:100%;object-fit:cover}
+.chips{display:flex;gap:10px;margin-top:22px}
+.chip{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600}
+.chip i{width:26px;height:26px;border-radius:7px;border:1px solid rgba(0,0,0,.12)}
+.grid{position:absolute;left:72px;right:72px;top:330px;bottom:100px;display:grid;gap:18px}
+.grid .cell{border-radius:16px;display:flex;align-items:center;justify-content:center;padding:22px;overflow:hidden}
+.grid .cell img{max-height:100%}
+.top{position:absolute;left:72px;top:120px;right:72px;display:flex;gap:60px;align-items:flex-end}
+.top .body{margin-top:0;max-width:520px}
+.icongrid .cell{flex-direction:column;gap:12px;background:none;padding:0}
+.icongrid .ic{width:150px;height:150px;border-radius:34px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.icongrid .ic img{width:100%;height:100%;object-fit:cover}
+.icongrid small{font-size:14px;font-weight:600;opacity:.7}
+.swatches{position:absolute;left:72px;right:72px;top:340px;bottom:100px;display:flex;gap:14px}
+.swatch{flex:1;border-radius:14px;display:flex;flex-direction:column;justify-content:flex-end;padding:16px;font-size:13px;font-weight:600;border:1px solid rgba(0,0,0,.08)}
+.swatch span{opacity:.75;font-weight:500}
+.closing .tt{position:absolute;left:72px;top:150px;max-width:760px}
+.closing .mk{position:absolute;right:80px;bottom:90px;width:150px;height:150px}
+.closing .mk img{width:100%;height:100%}
+#printroot{display:none}
+@media print{
+ @page{size:1280px 720px;margin:0}
+ html,body{background:#fff}
+ body:before{display:none}
+ .app,#status{display:none!important}
+ #printroot{display:block}
+ #printroot .pg{break-after:page;page-break-after:always}
+ *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+@media (max-width:860px){
+ .app{grid-template-columns:1fr;height:auto;min-height:100vh}
+ header{position:sticky;top:0;z-index:5;flex-wrap:wrap}
+ header .hidem{display:none}
+ aside{border-right:0}
+ .mobswitch{display:flex;gap:6px;padding:10px 12px;border-bottom:1px solid var(--line)}
+ .mobswitch .tab{flex:1;text-align:center}
+ body.vprev aside{display:none}
+ body:not(.vprev) main{display:none}
+ main{padding:14px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+ <header>
+  <div class="logo">Zyner<span>.</span>Studio</div>
+  <div class="sp"></div>
+  <button class="btn sm hidem" id="bDemo">Load Aiben demo</button>
+  <button class="btn sm" id="bAI">Write with AI</button>
+  <button class="btn pri sm" id="bPDF">Download PDF</button>
+ </header>
+ <div class="mobswitch" style="grid-column:1/-1"><button class="tab on" data-v="edit">Edit</button><button class="tab" data-v="prev">Preview</button></div>
+ <aside>
+  <div class="tabs">
+   <button class="tab on" data-p="brand">Brand</button>
+   <button class="tab" data-p="story">Knowledge</button>
+   <button class="tab" data-p="assets">Logos</button>
+   <button class="tab" data-p="products">Products</button>
+   <button class="tab" data-p="colours">Colours</button>
+   <button class="tab" data-p="copy">Write-up</button>
+   <button class="tab" data-p="ai">AI</button>
+   <button class="tab" data-p="file">Project</button>
+  </div>
+
+  <section class="panel on" id="p-brand">
+   <h3>The brand</h3>
+   <p class="hint">The basics that go on the cover and footer.</p>
+   <label>Brand name</label><input type="text" data-k="meta.brand">
+   <label>Document title</label><input type="text" data-k="meta.title">
+   <label>One-line summary (what the brand does)</label><textarea data-k="meta.oneliner" style="min-height:70px"></textarea>
+   <div class="row"><div><label>Prepared by</label><input type="text" data-k="meta.author"></div><div><label>Agency</label><input type="text" data-k="meta.agency"></div></div>
+   <label>Date</label><input type="text" data-k="meta.date">
+   <h3 style="margin-top:22px">Pages</h3>
+   <div id="secList"></div>
+  </section>
+
+  <section class="panel" id="p-story">
+   <h3>Knowledge</h3>
+   <p class="hint">Dump everything here: the brief, your thinking, the why behind each decision, client notes. The AI writes only from what's here.</p>
+   <label>Brand notes and explanations</label><textarea class="big" data-k="knowledge"></textarea>
+   <label>Voice: how the write-up should sound</label><textarea data-k="voice"></textarea>
+   <label>Reference files (.txt, .md, .pdf)</label>
+   <button class="btn sm filebtn">Add files<input type="file" id="kFiles" multiple accept=".txt,.md,.pdf,text/plain,text/markdown,application/pdf"></button>
+   <ul class="files" id="kList"></ul>
+   <p class="hint">PDFs are read by Gemini only. Text files work with every AI.</p>
+  </section>
+
+  <section class="panel" id="p-assets">
+   <h3>Parent brand</h3>
+   <p class="hint">Upload PNG or SVG with transparent backgrounds. If you skip the light versions, the dark ones get turned white automatically.</p>
+   <div id="assetSlots"></div>
+  </section>
+
+  <section class="panel" id="p-products">
+   <h3>Products</h3>
+   <p class="hint">Each product gets its own page. The app icon only shows on the icon page and its product page.</p>
+   <div id="prodList"></div>
+   <button class="btn sm" id="addProd">+ Add product</button>
+  </section>
+
+  <section class="panel" id="p-colours">
+   <h3>Theme</h3>
+   <div class="row">
+    <div><label>Accent</label><div class="row" style="align-items:center"><input type="color" class="sw" data-c="theme.acc"><input type="text" data-k="theme.acc"></div></div>
+    <div><label>Dark pages</label><div class="row" style="align-items:center"><input type="color" class="sw" data-c="theme.dark"><input type="text" data-k="theme.dark"></div></div>
+   </div>
+   <div class="row">
+    <div><label>Light pages</label><div class="row" style="align-items:center"><input type="color" class="sw" data-c="theme.paper"><input type="text" data-k="theme.paper"></div></div>
+    <div><label>Text</label><div class="row" style="align-items:center"><input type="color" class="sw" data-c="theme.ink"><input type="text" data-k="theme.ink"></div></div>
+   </div>
+   <h3 style="margin-top:22px">Brand colours</h3>
+   <p class="hint">Product colours are added on the colour page automatically.</p>
+   <div id="colList"></div>
+   <button class="btn sm" id="addCol">+ Add colour</button>
+  </section>
+
+  <section class="panel" id="p-copy">
+   <h3>Write-up</h3>
+   <p class="hint">Tap Write with AI to draft everything from your knowledge notes, then edit here. Rewrite redoes one section.</p>
+   <div id="copyList"></div>
+  </section>
+
+  <section class="panel" id="p-ai">
+   <h3>AI writer</h3>
+   <p class="hint">Keys stay on this device. They are never saved into project files.</p>
+   <label>Provider</label>
+   <select id="aiProv"><option value="gemini">Google Gemini (free plan available)</option><option value="openai">OpenAI (ChatGPT)</option><option value="anthropic">Anthropic (Claude)</option></select>
+   <label>API key</label><input type="password" id="aiKey" placeholder="Paste your key">
+   <label>Model</label>
+   <div class="row"><input type="text" id="aiModel"><button class="btn sm" id="aiList" style="flex:none">Find models</button></div>
+   <select id="aiModels" style="display:none;margin-top:8px"></select>
+   <p class="hint" style="margin-top:14px">Free Gemini key: sign in at aistudio.google.com, then Get API key. On the free plan Google may use what you send to improve its models.</p>
+   <button class="btn sm" id="aiTest">Test connection</button>
+  </section>
+
+  <section class="panel" id="p-file">
+   <h3>Project</h3>
+   <p class="hint">Your work saves on this device automatically. Export a project file to back it up or open it on another device.</p>
+   <div class="row" style="flex-wrap:wrap">
+    <button class="btn sm" id="bExport">Export project file</button>
+    <button class="btn sm filebtn">Open project file<input type="file" id="bImport" accept=".json,application/json"></button>
+   </div>
+   <div class="row" style="margin-top:12px;flex-wrap:wrap">
+    <button class="btn sm" id="bDemo2">Load Aiben demo</button>
+    <button class="btn sm" id="bNew">Start blank</button>
+   </div>
+  </section>
+ </aside>
+ <main><div id="doc"></div></main>
+</div>
+<div id="printroot"></div>
+<div id="status"></div>
+<script>
+const SECTIONS=[
+ ['cover','Cover'],['idea','The idea'],['parentDiv','Parent brand divider'],['wordmark','Wordmark'],['mark','Brand mark'],['together','Together or apart'],
+ ['prodDiv','Products divider'],['products','Product family'],['productPages','A page per product'],['icons','App icons'],['colour','Colour'],['closing','Closing note']];
+const COPYKEYS=[['idea','The idea'],['wordmark','Wordmark'],['mark','Brand mark'],['together','Together or apart'],['products','Product family'],['icons','App icons'],['colour','Colour'],['closing','Closing note']];
+const ASSETS=[['wordmark','Wordmark (dark ink)',0],['wordmarkL','Wordmark (light, for dark pages)',1],['mark','Brand mark',0],['markL','Brand mark (light)',1],['lockup','Lockup: mark + wordmark',0],['lockupL','Lockup (light)',1]];
+function blank(){return{v:1,meta:{brand:'',title:'Brand Identity Concept',oneliner:'',author:'Daniel Saka',agency:'Zyner Limited',date:new Date().toLocaleDateString('en-GB',{month:'long',year:'numeric'})},
+ knowledge:'',voice:'Plain, direct and specific, like a sharp consultant talking to a smart client. No buzzwords, no hype.',files:[],
+ theme:{acc:'#d2571f',dark:'#0e0e0e',paper:'#f4f2ee',ink:'#111111'},parent:{},products:[],colours:[],
+ sections:Object.fromEntries(SECTIONS.map(s=>[s[0],true])),copy:{},pcopy:{}}}
+let P=blank();
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const paras=s=>esc(s).split(/\n\s*\n/).filter(x=>x.trim()).map(x=>'<p>'+x.replace(/\n/g,'<br>')+'</p>').join('');
+const get=(o,k)=>k.split('.').reduce((a,b)=>a?.[b],o);
+const set=(o,k,v)=>{const ks=k.split('.');let t=o;ks.slice(0,-1).forEach(x=>t=t[x]??(t[x]={}));t[ks.at(-1)]=v};
+function status(m,err,ms=3200){const s=$('#status');s.textContent=m;s.className=err?'err':'';s.style.display='block';clearTimeout(status.t);if(ms)status.t=setTimeout(()=>s.style.display='none',ms)}
+/* storage */
+const DB={db:null,open(){return new Promise((r,j)=>{const q=indexedDB.open('zyner-studio',1);q.onupgradeneeded=()=>q.result.createObjectStore('kv');q.onsuccess=()=>{this.db=q.result;r()};q.onerror=j})},
+ get(k){return new Promise(r=>{const q=this.db.transaction('kv').objectStore('kv').get(k);q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)})},
+ put(k,v){return new Promise(r=>{const t=this.db.transaction('kv','readwrite');t.objectStore('kv').put(v,k);t.oncomplete=r;t.onerror=r})}};
+let saveT;function save(){clearTimeout(saveT);saveT=setTimeout(()=>DB.put('project',P),400)}
+function changed(){save();render()}
+/* image helpers */
+function readFile(f,as){return new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(fr.result);as==='text'?fr.readAsText(f):fr.readAsDataURL(f)})}
+async function shrink(dataUrl,max=1600){if(dataUrl.startsWith('data:image/svg'))return dataUrl;return new Promise(r=>{const im=new Image();im.onload=()=>{const s=Math.min(1,max/Math.max(im.width,im.height));if(s===1)return r(dataUrl);const c=document.createElement('canvas');c.width=im.width*s;c.height=im.height*s;c.getContext('2d').drawImage(im,0,0,c.width,c.height);r(c.toDataURL('image/png'))};im.onerror=()=>r(dataUrl);im.src=dataUrl})}
+async function pickImage(cb){const i=document.createElement('input');i.type='file';i.accept='image/png,image/svg+xml,image/jpeg,image/webp';i.onchange=async()=>{if(i.files[0])cb(await shrink(await readFile(i.files[0])))};i.click()}
+/* document */
+function lightOf(k){const v=P.parent[k+'L'];return v?`<img src="${v}">`:(P.parent[k]?`<img class="wht" src="${P.parent[k]}">`:'')}
+function darkOf(k){return P.parent[k]?`<img src="${P.parent[k]}">`:''}
+function C(k){return P.copy[k]||{h:'',b:''}}
+function ph(t){return t||'<span style="opacity:.35">Write with AI or type it in the Write-up tab</span>'}
+function H(k){return C(k).h?esc(C(k).h):ph('')}
+function B(k){return C(k).b?paras(C(k).b):'<p style="opacity:.35">Add notes in Knowledge, then tap Write with AI.</p>'}
+function lum(hex){const h=(hex||'#000').replace('#','');const n=parseInt(h.length===3?h.split('').map(x=>x+x).join(''):h,16);const r=(n>>16)&255,g=(n>>8)&255,b=n&255;return(0.299*r+0.587*g+0.114*b)/255}
+function buildPages(){
+ const m=P.meta,s=P.sections,pages=[];let n=0;const brand=esc(m.brand||'Brand');
+ const frame=(cls,label,inner)=>{n++;return `<div class="pg ${cls}">${label?`<div class="lab">${esc(label)}</div>`:''}${cls.includes('cover')?'':`<div class="no">${String(n).padStart(2,'0')}</div>`}${inner}${cls.includes('cover')?'':`<div class="foot"><span>${brand} · ${esc(m.title)}</span><span>${esc(m.agency||m.author)}</span></div>`}</div>`};
+ if(s.cover)pages.push(frame('dark cover','',`<div class="mark">${lightOf('mark')?'':''}${P.parent.mark?`<img src="${P.parent.mark}">`:''}</div><div class="lk">${lightOf('wordmark')||lightOf('lockup')}</div><div class="tt"><h1>${esc(m.title).replace(/ (\S+)$/,'<br>$1')}</h1><div class="sub">${brand} · Prepared by ${esc(m.author)}${m.agency?', '+esc(m.agency):''} · ${esc(m.date)}</div></div>`));
+ if(s.idea)pages.push(frame('','The idea',`<div style="position:absolute;left:72px;top:150px;right:72px;display:grid;grid-template-columns:1.1fr 1fr;gap:70px"><h2 style="font-size:84px">${H('idea')}</h2><div class="body" style="margin-top:6px">${B('idea')}</div></div>`));
+ if(s.parentDiv)pages.push(frame('acc div','Section 01',`<div class="big"><h1>Parent<br>brand</h1></div><div class="n">01</div>`));
+ if(s.wordmark)pages.push(frame('','Parent brand · Wordmark',`<div class="split"><div class="l"><h2>${H('wordmark')}</h2><div class="body">${B('wordmark')}</div></div><div class="r tile" style="--tile:#e8e5df">${darkOf('wordmark')}</div></div>`));
+ if(s.mark)pages.push(frame('dark','Parent brand · Brand mark',`<div class="split"><div class="l"><h2>${H('mark')}</h2><div class="body">${B('mark')}</div></div><div class="r">${P.parent.mark?`<img src="${P.parent.mark}" style="max-height:380px">`:''}</div></div>`));
+ if(s.together)pages.push(frame('','Parent brand · Together or apart',`<div class="top"><h2 style="flex:1">${H('together')}</h2><div class="body">${B('together')}</div></div><div class="grid" style="grid-template-columns:1.6fr 1fr 1fr;top:400px"><div class="cell" style="background:#e8e5df">${darkOf('lockup')||darkOf('wordmark')}</div><div class="cell" style="background:var(--p-acc)">${lightOf('mark')}</div><div class="cell" style="background:var(--p-dark)">${lightOf('wordmark')}</div></div>`));
+ const prods=P.products.filter(p=>p.name);
+ if(prods.length){
+  if(s.prodDiv)pages.push(frame('acc div','Section 02',`<div class="big"><h1>The<br>products</h1></div><div class="n">02</div>`));
+  if(s.products)pages.push(frame('dark','Products · The family',`<div class="top"><h2 style="flex:1">${H('products')}</h2><div class="body">${B('products')}</div></div><div class="grid" style="grid-template-columns:repeat(${Math.min(prods.length,4)},1fr);top:400px">${prods.slice(0,8).map(p=>`<div class="cell" style="background:${esc(p.base||'#1c1c1c')}">${p.wordmark?`<img src="${p.wordmark}">`:`<b style="font-size:26px">${esc(p.name)}</b>`}</div>`).join('')}</div>`));
+  if(s.productPages)prods.forEach(p=>{const c=P.pcopy[p.name]||{};pages.push(frame('','Products · '+p.name,`<div class="split pp"><div class="l" style="padding-top:140px"><h2>${c.h?esc(c.h):ph('')}</h2><div class="body">${c.b?paras(c.b):''}</div><div style="display:flex;gap:26px;align-items:flex-end">${p.icon?`<div class="icon"><img src="${p.icon}"></div>`:''}<div class="chips">${[p.accent,p.base].filter(Boolean).map(h=>`<div class="chip"><i style="background:${esc(h)}"></i>${esc(h.toUpperCase())}</div>`).join('')}</div></div></div><div class="r tile" style="--tile:${esc(p.base||'#1c1c1c')}">${p.wordmark?`<img class="wm" src="${p.wordmark}">`:`<h2 style="color:${esc(p.accent||'#fff')}">${esc(p.name)}</h2>`}</div></div>`))});
+  if(s.icons&&prods.some(p=>p.icon))pages.push(frame('','Products · App icons',`<div class="top"><h2 style="flex:1">${H('icons')}</h2><div class="body">${B('icons')}</div></div><div class="grid icongrid" style="grid-template-columns:repeat(${Math.min(prods.filter(p=>p.icon).length,5)},1fr);top:390px">${prods.filter(p=>p.icon).map(p=>`<div class="cell"><div class="ic"><img src="${p.icon}"></div><small>${esc(p.name)}</small></div>`).join('')}</div>`));
+ }
+ if(s.colour){const cols=[...P.colours.filter(c=>c.hex),...prods.flatMap(p=>[p.accent&&{name:p.name+' accent',hex:p.accent},p.base&&{name:p.name+' base',hex:p.base}].filter(Boolean))].slice(0,10);
+  pages.push(frame('','Colour',`<div class="top"><h2 style="flex:1">${H('colour')}</h2><div class="body">${B('colour')}</div></div><div class="swatches">${cols.map(c=>`<div class="swatch" style="background:${esc(c.hex)};color:${lum(c.hex)>.6?'#111':'#fff'}">${esc(c.name)}<span>${esc(c.hex.toUpperCase())}</span></div>`).join('')}</div>`))}
+ if(s.closing)pages.push(frame('dark closing','',`<div class="tt"><h2 style="font-size:84px">${H('closing')}</h2><div class="body" style="max-width:620px">${B('closing')}</div></div><div class="mk">${lightOf('mark')}</div>`));
+ return pages;
+}
+function themeVars(){const t=P.theme;return `--p-acc:${t.acc};--p-dark:${t.dark};--p-paper:${t.paper};--p-ink:${t.ink}`}
+let rT;function render(){clearTimeout(rT);rT=setTimeout(()=>{const pages=buildPages();const d=$('#doc');d.setAttribute('style',themeVars());d.innerHTML=pages.map((p,i)=>`<div class="pgwrap">${p}</div>`).join('')||'<p class="hint">Nothing to show yet.</p>';scale()},60)}
+function scale(){const w=$('#doc').clientWidth;$('#doc').style.setProperty('--s',w/1280)}
+addEventListener('resize',scale);
+/* forms */
+function bindFields(){$$('[data-k]').forEach(el=>{el.value=get(P,el.dataset.k)??'';el.oninput=()=>{set(P,el.dataset.k,el.value);const c=$(`[data-c="${el.dataset.k}"]`);if(c&&/^#[0-9a-f]{6}$/i.test(el.value))c.value=el.value;changed()}});
+ $$('[data-c]').forEach(el=>{el.value=/^#[0-9a-f]{6}$/i.test(get(P,el.dataset.c)||'')?get(P,el.dataset.c):'#000000';el.oninput=()=>{set(P,el.dataset.c,el.value);$(`[data-k="${el.dataset.c}"]`).value=el.value;changed()}})}
+function drawSections(){$('#secList').innerHTML=SECTIONS.map(([k,l])=>`<label class="chk"><input type="checkbox" data-sec="${k}" ${P.sections[k]!==false?'checked':''}> ${l}</label>`).join('');$$('[data-sec]').forEach(c=>c.onchange=()=>{P.sections[c.dataset.sec]=c.checked;changed()})}
+function drawAssets(){$('#assetSlots').innerHTML=ASSETS.map(([k,l,dk])=>`<div class="slot"><div class="thumb ${dk?'dk':''}" style="background-image:${P.parent[k]?`url(${P.parent[k]})`:'none'}"></div><div class="t"><b>${l}</b><small>${P.parent[k]?'Uploaded':'Empty'}</small></div><button class="btn sm" data-up="${k}">${P.parent[k]?'Replace':'Upload'}</button>${P.parent[k]?`<button class="x" data-rm="${k}">×</button>`:''}</div>`).join('');
+ $$('[data-up]').forEach(b=>b.onclick=()=>pickImage(u=>{P.parent[b.dataset.up]=u;drawAssets();changed()}));$$('[data-rm]').forEach(b=>b.onclick=()=>{delete P.parent[b.dataset.rm];drawAssets();changed()})}
+function drawProducts(){$('#prodList').innerHTML=P.products.map((p,i)=>`<div class="card"><div class="row" style="align-items:center"><input type="text" data-pi="${i}" data-pf="name" value="${esc(p.name)}" placeholder="Product name"><button class="x" data-pdel="${i}" style="flex:none">×</button></div>
+ <div class="slot"><div class="thumb dk" style="background-image:${p.wordmark?`url(${p.wordmark})`:'none'};background-color:${esc(p.base||'#1c1c1c')}"></div><div class="t"><b>Product wordmark</b><small>${p.wordmark?'Uploaded':'Empty'}</small></div><button class="btn sm" data-pimg="${i}" data-f="wordmark">Upload</button></div>
+ <div class="slot"><div class="thumb dk" style="background-image:${p.icon?`url(${p.icon})`:'none'}"></div><div class="t"><b>App icon</b><small>${p.icon?'Uploaded':'Empty'}</small></div><button class="btn sm" data-pimg="${i}" data-f="icon">Upload</button></div>
+ <div class="row"><div><label>Accent</label><div class="row" style="align-items:center"><input type="color" class="sw" data-pi="${i}" data-pf="accent" value="${/^#[0-9a-f]{6}$/i.test(p.accent||'')?p.accent:'#ffffff'}"><input type="text" data-pi="${i}" data-pf="accent" value="${esc(p.accent||'')}"></div></div><div><label>Base</label><div class="row" style="align-items:center"><input type="color" class="sw" data-pi="${i}" data-pf="base" value="${/^#[0-9a-f]{6}$/i.test(p.base||'')?p.base:'#000000'}"><input type="text" data-pi="${i}" data-pf="base" value="${esc(p.base||'')}"></div></div></div>
+ <label>What it does (helps the AI)</label><textarea data-pi="${i}" data-pf="note" style="min-height:60px">${esc(p.note||'')}</textarea></div>`).join('');
+ $$('[data-pf]').forEach(el=>el.oninput=()=>{const p=P.products[el.dataset.pi],f=el.dataset.pf,old=p.name;p[f]=el.value;if(f==='name'&&P.pcopy[old]){P.pcopy[el.value]=P.pcopy[old];delete P.pcopy[old]}
+  if(el.type==='color')el.nextElementSibling.value=el.value;else if(el.previousElementSibling?.type==='color'&&/^#[0-9a-f]{6}$/i.test(el.value))el.previousElementSibling.value=el.value;changed();if(f==='name')drawCopy()});
+ $$('[data-pimg]').forEach(b=>b.onclick=()=>pickImage(u=>{P.products[b.dataset.pimg][b.dataset.f]=u;drawProducts();changed()}));
+ $$('[data-pdel]').forEach(b=>b.onclick=()=>{if(confirm('Remove this product?')){P.products.splice(b.dataset.pdel,1);drawProducts();drawCopy();changed()}})}
+function drawColours(){$('#colList').innerHTML=P.colours.map((c,i)=>`<div class="row" style="align-items:center;margin:6px 0"><input type="color" class="sw" data-ci="${i}" data-cf="hex" value="${/^#[0-9a-f]{6}$/i.test(c.hex||'')?c.hex:'#000000'}" style="flex:none"><input type="text" data-ci="${i}" data-cf="name" value="${esc(c.name)}" placeholder="Name"><input type="text" data-ci="${i}" data-cf="hex" value="${esc(c.hex)}" placeholder="#000000"><button class="x" data-cdel="${i}" style="flex:none">×</button></div>`).join('');
+ $$('[data-cf]').forEach(el=>el.oninput=()=>{P.colours[el.dataset.ci][el.dataset.cf]=el.value;if(el.type==='color')el.parentElement.querySelectorAll('[data-cf=hex]')[1].value=el.value;changed()});
+ $$('[data-cdel]').forEach(b=>b.onclick=()=>{P.colours.splice(b.dataset.cdel,1);drawColours();changed()})}
+function drawCopy(){const items=[...COPYKEYS.map(([k,l])=>({k,l,o:P.copy,id:k})),...P.products.filter(p=>p.name).map(p=>({k:p.name,l:'Product · '+p.name,o:P.pcopy,id:'p:'+p.name}))];
+ $('#copyList').innerHTML=items.map(it=>{const c=it.o[it.k]||{};return `<div class="copyblock"><div class="hd"><b>${esc(it.l)}</b><button class="btn sm" data-rw="${esc(it.id)}">Rewrite</button></div><label>Headline</label><input type="text" data-cid="${esc(it.id)}" data-cp="h" value="${esc(c.h||'')}"><label>Body</label><textarea data-cid="${esc(it.id)}" data-cp="b">${esc(c.b||'')}</textarea></div>`}).join('');
+ $$('[data-cp]').forEach(el=>el.oninput=()=>{const id=el.dataset.cid,[o,k]=id.startsWith('p:')?[P.pcopy,id.slice(2)]:[P.copy,id];o[k]=o[k]||{};o[k][el.dataset.cp]=el.value;changed()});
+ $$('[data-rw]').forEach(b=>b.onclick=()=>rewrite(b.dataset.rw,b))}
+function drawFiles(){$('#kList').innerHTML=P.files.map((f,i)=>`<li>${esc(f.name)}<button class="x" data-fdel="${i}">×</button></li>`).join('');$$('[data-fdel]').forEach(b=>b.onclick=()=>{P.files.splice(b.dataset.fdel,1);drawFiles();save()})}
+function drawAll(){bindFields();drawSections();drawAssets();drawProducts();drawColours();drawCopy();drawFiles();render()}
+$('#kFiles').onchange=async e=>{for(const f of e.target.files){const pdf=/pdf$/i.test(f.type)||/\.pdf$/i.test(f.name);P.files.push({name:f.name,kind:pdf?'pdf':'text',data:await readFile(f,pdf?'url':'text')})}e.target.value='';drawFiles();save()};
+$('#addProd').onclick=()=>{P.products.push({name:'',accent:'',base:'',note:''});drawProducts();save()};
+$('#addCol').onclick=()=>{P.colours.push({name:'',hex:''});drawColours();save()};
+$$('.tabs .tab').forEach(t=>t.onclick=()=>{$$('.tabs .tab').forEach(x=>x.classList.toggle('on',x===t));$$('.panel').forEach(p=>p.classList.toggle('on',p.id==='p-'+t.dataset.p))});
+$$('.mobswitch .tab').forEach(t=>t.onclick=()=>{$$('.mobswitch .tab').forEach(x=>x.classList.toggle('on',x===t));document.body.classList.toggle('vprev',t.dataset.v==='prev');scale();window.scrollTo(0,0)});
+/* AI */
+const AIDEF={gemini:'gemini-2.5-flash',openai:'gpt-4o-mini',anthropic:'claude-3-5-haiku-latest'};
+function aiCfg(){const prov=localStorage.zsProv||'gemini';return{prov,key:localStorage['zsKey_'+prov]||'',model:localStorage['zsModel_'+prov]||AIDEF[prov]}}
+function drawAI(){const c=aiCfg();$('#aiProv').value=c.prov;$('#aiKey').value=c.key;$('#aiModel').value=c.model;$('#aiModels').style.display='none'}
+$('#aiProv').onchange=e=>{localStorage.zsProv=e.target.value;drawAI()};
+$('#aiKey').oninput=e=>localStorage['zsKey_'+aiCfg().prov]=e.target.value.trim();
+$('#aiModel').oninput=e=>localStorage['zsModel_'+aiCfg().prov]=e.target.value.trim();
+$('#aiModels').onchange=e=>{$('#aiModel').value=e.target.value;localStorage['zsModel_'+aiCfg().prov]=e.target.value};
+$('#aiList').onclick=async()=>{const c=aiCfg();if(!c.key)return status('Paste your API key first',1);try{let ids=[];
+ if(c.prov==='gemini'){const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=200&key='+encodeURIComponent(c.key));const j=await r.json();if(!r.ok)throw Error(j.error?.message||r.status);ids=j.models.filter(m=>m.supportedGenerationMethods?.includes('generateContent')).map(m=>m.name.replace('models/',''))}
+ else if(c.prov==='openai'){const r=await fetch('https://api.openai.com/v1/models',{headers:{Authorization:'Bearer '+c.key}});const j=await r.json();if(!r.ok)throw Error(j.error?.message||r.status);ids=j.data.map(m=>m.id).filter(x=>/gpt|o\d/.test(x)).sort()}
+ else{const r=await fetch('https://api.anthropic.com/v1/models',{headers:{'x-api-key':c.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'}});const j=await r.json();if(!r.ok)throw Error(j.error?.message||r.status);ids=j.data.map(m=>m.id)}
+ const s=$('#aiModels');s.innerHTML=ids.map(i=>`<option ${i===c.model?'selected':''}>${esc(i)}</option>`).join('');s.style.display='block';status(ids.length+' models found')}catch(e){status('Could not list models: '+e.message,1,6000)}};
+$('#aiTest').onclick=async()=>{try{status('Testing…','',0);const t=await callAI('Reply with the JSON {"ok":true}','Return JSON only.');status(/ok/.test(t)?'Connected. You are good to go.':'Connected, but the reply was odd: '+t.slice(0,80))}catch(e){status(e.message,1,7000)}};
+async function callAI(user,system,useFiles){const c=aiCfg();if(!c.key)throw Error('Add your API key in the AI tab first');
+ if(c.prov==='gemini'){const parts=[{text:user}];if(useFiles)P.files.filter(f=>f.kind==='pdf').forEach(f=>parts.push({inline_data:{mime_type:'application/pdf',data:f.data.split(',')[1]}}));
+  const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(c.model)}:generateContent?key=${encodeURIComponent(c.key)}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({systemInstruction:{parts:[{text:system}]},contents:[{role:'user',parts}],generationConfig:{responseMimeType:'application/json',temperature:.7}})});
+  const j=await r.json();if(!r.ok)throw Error('Gemini: '+(j.error?.message||r.status));return j.candidates?.[0]?.content?.parts?.map(p=>p.text||'').join('')||''}
+ if(c.prov==='openai'){const r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+c.key},body:JSON.stringify({model:c.model,response_format:{type:'json_object'},messages:[{role:'system',content:system},{role:'user',content:user}]})});
+  const j=await r.json();if(!r.ok)throw Error('OpenAI: '+(j.error?.message||r.status));return j.choices[0].message.content}
+ const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':c.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:c.model,max_tokens:4000,system,messages:[{role:'user',content:user}]})});
+ const j=await r.json();if(!r.ok)throw Error('Claude: '+(j.error?.message||r.status));return j.content.map(x=>x.text||'').join('')}
+function parseJSON(t){t=t.trim().replace(/^```(json)?/i,'').replace(/```$/,'').trim();const a=t.indexOf('{'),b=t.lastIndexOf('}');return JSON.parse(t.slice(a,b+1))}
+const SYSTEM=()=>`You are a senior brand strategist writing the copy for a brand identity presentation deck. Write like a sharp consultant explaining their thinking to a smart client: plain words, specific reasons, short sentences. Explain the why behind each decision.
+Rules: use only facts and reasoning found in the brief and reference files; never invent statistics, clients, awards or claims. No buzzwords or filler (elevate, seamless, vibrant, robust, leverage, journey, cutting-edge, game-changer, in today's world, testament). No em dashes or en dashes. No exclamation marks. Headlines are declarative takeaways, 3 to 8 words, sentence case. Return valid JSON only.
+Voice notes from the designer: ${P.voice||'none'}`;
+function brief(){const m=P.meta;const prods=P.products.filter(p=>p.name);
+ const txt=P.files.filter(f=>f.kind==='text').map(f=>`--- ${f.name} ---\n${f.data.slice(0,20000)}`).join('\n\n');
+ return `BRAND: ${m.brand}\nDOCUMENT: ${m.title}\nSUMMARY: ${m.oneliner}\nPARENT BRAND ASSETS: ${['wordmark','mark','lockup'].filter(k=>P.parent[k]).join(', ')||'none uploaded'}\nPRODUCTS:\n${prods.map(p=>`- ${p.name}: accent ${p.accent||'n/a'}, base ${p.base||'n/a'}. ${p.note||''}${p.icon?' Has an app icon.':''}${p.wordmark?' Has its own wordmark.':''}`).join('\n')||'none'}\nBRAND COLOURS: ${P.colours.filter(c=>c.hex).map(c=>c.name+' '+c.hex).join(', ')||'none'}\n\nDESIGNER'S NOTES AND EXPLANATIONS:\n${P.knowledge||'(none)'}\n${txt?'\nREFERENCE FILES:\n'+txt:''}`}
+async function writeAll(){const b=$('#bAI');b.disabled=true;status('Writing your document…','',0);
+ try{const prods=P.products.filter(p=>p.name).map(p=>p.name);
+  const shape={idea:{h:'',b:''},wordmark:{h:'',b:''},mark:{h:'',b:''},together:{h:'',b:''},products:{h:'',b:''},product_pages:prods.map(n=>({name:n,h:'',b:''})),icons:{h:'',b:''},colour:{h:'',b:''},closing:{h:'',b:''}};
+  const user=`${brief()}\n\nWrite every section of the deck. "h" is the headline. "b" is the body: 35 to 70 words, one or two short paragraphs separated by a blank line.
+Sections: idea = the core idea behind the whole identity; wordmark = the parent wordmark and why it looks the way it does; mark = the brand mark/symbol and what it carries; together = when the mark and wordmark appear together vs apart; products = how the product identities relate to the parent; product_pages = one per product (${prods.join(', ')||'none'}); icons = the app icon system; colour = the colour system, including that colours can flex if the rest of the family still works; closing = what stays fixed and what can grow.
+Return exactly this JSON shape: ${JSON.stringify(shape)}`;
+  const j=parseJSON(await callAI(user,SYSTEM(),true));
+  COPYKEYS.forEach(([k])=>{if(j[k]?.h||j[k]?.b)P.copy[k]={h:j[k].h||'',b:j[k].b||''}});
+  (j.product_pages||[]).forEach(p=>{if(p?.name)P.pcopy[p.name]={h:p.h||'',b:p.b||''}});
+  drawCopy();changed();status('Done. Check the Write-up tab to tweak anything.')}catch(e){status(e.message,1,8000)}finally{b.disabled=false}}
+async function rewrite(id,btn){btn.disabled=true;const prod=id.startsWith('p:');const k=prod?id.slice(2):id;const cur=(prod?P.pcopy:P.copy)[k]||{};const label=prod?'the product page for '+k:(COPYKEYS.find(x=>x[0]===k)||[])[1];
+ try{status('Rewriting…','',0);const j=parseJSON(await callAI(`${brief()}\n\nRewrite the "${label}" section. Current version: ${JSON.stringify(cur)}. Make it sharper and more specific, keep the facts. Body 35 to 70 words. Return JSON {"h":"","b":""}.`,SYSTEM(),true));
+  (prod?P.pcopy:P.copy)[k]={h:j.h||cur.h||'',b:j.b||cur.b||''};drawCopy();changed();status('Rewritten')}catch(e){status(e.message,1,8000)}finally{btn.disabled=false}}
+$('#bAI').onclick=writeAll;
+/* PDF */
+$('#bPDF').onclick=()=>{const r=$('#printroot');r.setAttribute('style',themeVars());r.innerHTML=buildPages().join('');document.title=(P.meta.brand||'Brand')+' - '+P.meta.title;
+ const imgs=[...r.querySelectorAll('img')];Promise.all(imgs.map(i=>i.complete?1:new Promise(z=>{i.onload=i.onerror=z}))).then(()=>document.fonts.ready).then(()=>setTimeout(()=>window.print(),150))};
+addEventListener('afterprint',()=>{$('#printroot').innerHTML='';document.title='Zyner Studio · Brand document builder'});
+/* project file */
+$('#bExport').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(P)],{type:'application/json'}));a.download=(P.meta.brand||'project').replace(/\W+/g,'-').toLowerCase()+'.zyner.json';a.click()};
+$('#bImport').onchange=async e=>{try{const j=JSON.parse(await readFile(e.target.files[0],'text'));P=Object.assign(blank(),j);save();drawAll();status('Project opened')}catch(x){status('That file is not a project file',1)}e.target.value=''};
+$('#bNew').onclick=()=>{if(confirm('Start a blank project? Export first if you want to keep this one.')){P=blank();save();drawAll()}};
+async function toData(u){const b=await (await fetch(u)).blob();return readFile(b)}
+async function loadDemo(){if(P.meta.brand&&P.meta.brand!=='Aiben'&&!confirm('Replace your current project with the Aiben demo?'))return;status('Loading demo…','',0);
+ const d=n=>toData('demo/'+n+'.png');const D=blank();
+ Object.assign(D.meta,{brand:'Aiben',title:'Brand Identity Concept',oneliner:'Aiben Technologies runs four everyday services under one parent brand: Ride, Rider, Mart and Top-Up.',date:'October 2026'});
+ D.theme={acc:'#0f38fe',dark:'#0e0e0e',paper:'#f4f2ee',ink:'#111111'};
+ D.parent={wordmark:await d('wm_black'),wordmarkL:await d('wm_white'),mark:await d('spark_blue'),markL:await d('spark_white'),lockup:await d('lockup_plain'),lockupL:await d('lockup_plain_white')};
+ const pr=[['Ride','ride','#FFC201','#161616','Passenger app for booking rides.'],['Rider','rider','#0DFE81','#004248','App for drivers and riders who take trips and deliveries.'],['Mart','mart','#FBB03B','#333333','Groceries and everyday shopping, delivered.'],['Top-Up','topup','#00FD54','#031C03','Airtime, data and bill payments.']];
+ for(const [n,f,a,b,no] of pr)D.products.push({name:n,wordmark:await d('wm_'+f),icon:await d('icon_'+f),accent:a,base:b,note:no});
+ D.colours=[{name:'Aiben blue',hex:'#0F38FE'},{name:'Ink',hex:'#0E0E0E'},{name:'Paper',hex:'#F4F2EE'}];
+ D.knowledge=`Aiben Technologies is the parent company. It has two main elements: a wordmark and a distinctive brand mark, the spark.\nThe spark is built into every product's app icon so the whole family reads as one.\nEach product identity uses the parent wordmark as its foundation, with the product name in a playful handwritten script. The script gives each product its personality; the wordmark keeps the family resemblance.\nThe wordmark and the mark can be used together or on their own, for example the mark alone in a footer.\nProduct wordmarks are not paired with the app icon on websites. App icons are for the apps, and can be used as favicons for each product's website.\nColours are a starting point. Any product colour can change if it clashes with what the team is building, as long as the colours still work together as a family. The structure stays fixed.`;
+ D.copy={idea:{h:'One parent, four products, one family',b:'Aiben runs four services people use every day: rides, driving, groceries and top-ups. The identity has one job. Each product should feel like its own thing, and it should still be obvious they all come from the same house.\n\nThe parent brand is the anchor. The products borrow from it, then add their own personality.'},
+ wordmark:{h:'A wordmark built to carry the family',b:'The Aiben wordmark is clean, heavy and easy to read at any size. Every product name sits on top of it, so it has to stay calm and confident. Nothing decorative, nothing that fights the product names beside it.'},
+ mark:{h:'The spark is the signature',b:'The brand mark is a spark, a small burst of energy that says something is about to move. It works alone as an avatar, a footer sign-off or a pattern, and it is the one element that shows up in every product icon.'},
+ together:{h:'Together when it counts, apart when it reads cleaner',b:'The wordmark and the spark can lock up or stand alone. On a first introduction, use them together. Once people know the brand, either one is enough: a footer can carry just the spark, a document header just the wordmark.'},
+ products:{h:'Each product gets its own voice',b:'Every product keeps the Aiben wordmark as its base and adds a handwritten script for its name. The script brings the personality. The wordmark keeps the family resemblance. Change the script and the colour, keep the structure.'},
+ icons:{h:'The spark lives inside every icon',b:'Each app icon pairs the product colour with the spark, so the set reads as one family on a home screen. Icons belong to the apps and to each website favicon. On the websites themselves, the product wordmark stands alone.'},
+ colour:{h:'Colours that work as a family',b:'Aiben blue holds the parent brand. Each product gets an accent and a deep base so it can be told apart at a glance. These are a starting point. If a colour clashes with what a product team is building, change it, as long as the set still works together.'},
+ closing:{h:'A system, not a set of logos',b:'The structure stays fixed: parent wordmark, product script, spark in every icon. Colours and details can flex as the products grow. That balance lets Aiben add a fifth or sixth product without starting over.'}};
+ D.pcopy={Ride:{h:'Getting people there, quickly',b:'Aiben Ride is the passenger app. Warm yellow on charcoal keeps it bright and easy to spot, the way a good ride should feel: quick, clear and on your side.'},
+ Rider:{h:'Built for the people on the road',b:'Aiben Rider is the app for drivers and riders. Mint on deep teal gives it a calmer, working tone, so it feels related to Ride without being mistaken for it.'},
+ Mart:{h:'Groceries without the trip',b:'Aiben Mart handles shopping and delivery. Amber on graphite feels warm and everyday, closer to a market stall than a tech product.'},
+ 'Top-Up':{h:'Airtime and data in seconds',b:'Aiben Top-Up covers airtime, data and bills. Electric green on near-black signals speed, and money handled properly.'}};
+ P=D;save();drawAll();status('Aiben demo loaded')}
+$('#bDemo').onclick=loadDemo;$('#bDemo2').onclick=loadDemo;
+(async()=>{await DB.open();const s=await DB.get('project');if(s)P=Object.assign(blank(),s);drawAI();drawAll();if(!s)loadDemo()})();
+</script>
+</body>
+</html>
