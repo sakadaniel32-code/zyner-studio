@@ -411,6 +411,9 @@ textarea.f{min-height:84px;resize:vertical}
 .pg.k-poster.L-pieces .cell .tile{background:var(--card)!important}
 .pg.k-poster.L-colours .sw{left:640px;right:24px;top:66px;bottom:28px}
 .pg.k-poster.L-colours .s{border-radius:var(--r)}
+.pg.k-poster.L-colours .sw{flex-wrap:wrap}
+.pg.k-poster.L-colours .s{flex:1 1 70px;min-width:0}
+
 .pg.k-poster.L-table table{left:640px;right:24px;top:66px;font-size:16px}
 .pg.k-poster.L-table td{border:0;background:var(--card);border-bottom:8px solid var(--bg0)}
 .pg.k-poster.L-text .H{left:24px;top:66px;width:1200px;max-width:1200px;font-size:96px}
