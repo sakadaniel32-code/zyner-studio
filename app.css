@@ -230,3 +230,162 @@ textarea.f{min-height:84px;resize:vertical}
  .canvas{padding:12px}
  .li .pthumb{width:110px}
 }
+
+/* ===== Kit: Campaign (learned from a campaign-style brand playbook) ===== */
+.pg.k-campaign .H{line-height:1}
+.pg.k-campaign .a2{color:var(--acc)}
+.pg.k-campaign .rule{position:absolute;left:44px;right:44px;top:34px;border-top:2px dotted currentColor;opacity:.35}
+.pg.k-campaign .rule.b{top:auto;bottom:40px}
+.pg.k-campaign .lab{top:48px;left:44px;font-size:17px;letter-spacing:0;text-transform:none;font-weight:800;color:var(--acc);opacity:1}
+.pg.k-campaign .no{top:auto;bottom:14px;right:44px;font-size:12px}
+.pg.k-campaign .foot{bottom:14px;left:44px;right:120px;font-size:12px}
+.pg.k-campaign.t-paper .H{color:var(--deep)}
+.pg.k-campaign.t-dark.L-statement .B{background:var(--acc);color:var(--accfg)}
+.pg.k-campaign.L-statement .H{left:44px;top:110px;max-width:700px;font-size:96px}
+.pg.k-campaign.L-statement .B{left:800px;right:60px;top:0;height:560px;background:var(--deep);color:#fff;opacity:1;border-radius:0 0 230px 230px;padding:190px 46px 0;font-weight:600;font-size:19px}
+.pg.k-campaign.L-text .H{left:44px;top:110px}
+.pg.k-campaign.L-text .B{left:680px;top:120px}
+.pg.k-campaign .hdr{left:44px;right:44px;top:100px}
+.pg.k-campaign.L-divider .num{display:none}
+.pg.k-campaign.L-divider:after{content:"";position:absolute;right:90px;top:0;width:300px;height:500px;background:var(--acc);border-radius:0 0 150px 150px}
+.pg.k-campaign.L-divider .H{left:44px;bottom:90px;font-size:150px;max-width:780px;color:#fff;position:absolute;z-index:1}
+.pg.k-campaign.L-list .it,.pg.k-campaign.L-steps .it{border-top:0;background:var(--deep);color:#fff;padding:26px 26px 60px;border-radius:0 0 160px 160px}
+.pg.k-campaign.L-list .it .n{color:var(--acc);opacity:1}
+.pg.k-campaign.L-steps .it:before{display:none}
+.pg.k-campaign.L-steps .it .n{position:static;margin-bottom:14px}
+.pg.k-campaign .tile{border-radius:0 0 140px 140px}
+.pg.k-campaign.L-piece .r .tile{border-radius:0 0 300px 300px;inset:0 40px 60px 0}
+.pg.k-campaign.L-colours .s{border-radius:0 0 90px 90px;padding-bottom:40px}
+.pg.k-campaign.L-cover .H{font-size:104px;color:#fff}
+.pg.k-campaign.L-cover .tt{left:56px;bottom:90px;max-width:700px}
+.pg.k-campaign.L-cover .brand{left:56px;top:56px;color:var(--acc);font-weight:800}
+.pg.k-campaign.L-cover .hero{right:70px;top:0;bottom:80px;width:400px;border-radius:0 0 200px 200px;background:#fff!important;padding:60px}
+.pg.k-campaign.L-closing .H{color:#fff}
+.pg.k-campaign.L-quote .q{color:var(--acc);opacity:1}
+
+/* ===== Kit: Gallery Grid (learned from a city-of-culture identity guide) ===== */
+.pg.k-grid .rule{position:absolute;left:42px;right:42px;top:118px;border-top:1.5px solid currentColor;opacity:.55}
+.pg.k-grid .rule.m{top:578px}
+.pg.k-grid .lab{left:42px;top:140px;width:380px;font-size:40px;font-weight:500;letter-spacing:-.03em;text-transform:none;opacity:1;line-height:1.05;font-family:var(--hf),Inter,sans-serif}
+.pg.k-grid .lab span{display:block}
+.pg.k-grid .no{display:none}
+.pg.k-grid .foot{left:42px;right:42px;bottom:34px;display:grid;grid-template-columns:425px 425px 1fr;font-size:10px;opacity:.8}
+.pg.k-grid .stripe{position:absolute;left:0;right:0;bottom:0;height:18px;display:flex}
+.pg.k-grid .stripe i,.pg.k-grid .stack i{flex:1}
+.pg.k-grid .stack{position:absolute;right:42px;bottom:40px;width:94px;height:106px;display:flex;flex-direction:column}
+.pg.k-grid .hdr{left:467px;right:42px;top:140px;grid-template-columns:1fr 1fr;gap:42px}
+.pg.k-grid .hdr .H{font-size:34px;line-height:1.08}
+.pg.k-grid .hdr .B{font-size:15px;line-height:1.5}
+.pg.k-grid.L-list .items,.pg.k-grid.L-steps .items,.pg.k-grid.L-pieces .tiles,.pg.k-grid.L-colours .sw,.pg.k-grid.L-type .fonts,.pg.k-grid.L-table table{left:467px;right:42px;top:300px;bottom:80px}
+.pg.k-grid.L-list .items,.pg.k-grid.L-pieces .tiles,.pg.k-grid.L-colours .sw,.pg.k-grid.L-type .fonts{border-top:1px solid rgba(128,128,128,.5);padding-top:20px}
+.pg.k-grid.L-list .it{border-top:0}
+.pg.k-grid.L-table table{bottom:auto;font-size:15px}
+.pg.k-grid.L-statement .H{left:467px;top:140px;max-width:770px;font-size:70px;font-weight:500}
+.pg.k-grid.L-statement .B{left:467px;right:auto;width:420px;top:auto;bottom:90px;font-size:15px}
+.pg.k-grid.L-text .H{left:467px;top:140px;width:380px;font-size:38px}
+.pg.k-grid.L-text .B{left:892px;right:42px;top:145px;font-size:15px}
+.pg.k-grid.L-piece .l{left:42px;top:300px;width:380px}
+.pg.k-grid.L-piece .H{font-size:30px}
+.pg.k-grid.L-piece .B{font-size:15px}
+.pg.k-grid.L-piece .r{left:467px;right:42px;top:140px;bottom:70px;width:auto}
+.pg.k-grid.L-piece .r .tile{padding:50px}
+.pg.k-grid.L-colours .s{border-radius:0;border:0;font-size:11px}
+.pg.k-grid.L-divider .num{left:42px;right:auto;top:140px;bottom:auto;font-size:40px;font-weight:500;opacity:.6;font-family:var(--hf),Inter,sans-serif}
+.pg.k-grid.L-divider .H{left:467px;top:140px;bottom:auto;font-size:90px;font-weight:500}
+.pg.k-grid.L-divider .lab{display:none}
+.pg.k-grid.L-cover .hero{left:320px;right:320px;top:150px;bottom:170px;width:auto;background:transparent!important}
+.pg.k-grid.L-cover .hero img{max-height:380px;max-width:520px}
+.pg.k-grid.L-cover .brand{left:42px;top:auto;bottom:70px;font-size:34px;font-weight:500;letter-spacing:-.03em;max-width:400px;line-height:1.1}
+.pg.k-grid.L-cover .tt{left:892px;bottom:60px;max-width:220px}
+.pg.k-grid.L-cover .H{font-size:34px;line-height:1.1}
+.pg.k-grid.L-cover .meta{font-size:10px;margin-top:14px}
+.pg.k-grid.L-closing .H{left:42px;top:140px;font-size:38px;max-width:380px}
+.pg.k-grid.L-closing .B{left:467px;top:140px;right:42px;max-width:none;font-size:32px;line-height:1.25;opacity:1}
+.pg.k-grid.L-closing .lab{display:none}
+.pg.k-grid.L-quote .H{left:467px;top:140px;font-size:56px;font-weight:500}
+.pg.k-grid.L-quote .q{left:42px;top:120px}
+
+/* ===== Kit: Industrial (learned from an infrastructure company's brand guide) ===== */
+.pg.k-ind .nav{position:absolute;left:0;right:0;top:0;height:58px;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;gap:10px;font-family:'Oswald',sans-serif;font-weight:500;text-transform:uppercase;font-size:15px;letter-spacing:.02em;white-space:nowrap;overflow:hidden;padding:0 40px}
+.pg.k-ind .nav em{font-style:normal;opacity:.6}
+.pg.k-ind .nav .on{color:var(--acc)}
+.pg.k-ind .lab{left:110px;top:122px;font-family:'Oswald',sans-serif;font-size:30px;font-weight:500;letter-spacing:0;color:var(--acc);opacity:1}
+.pg.k-ind .no{top:auto;bottom:22px;right:36px;font-size:11px}
+.pg.k-ind .no:before{content:"PAGE "}
+.pg.k-ind .foot{display:none}
+.pg.k-ind .H{line-height:.95}
+.pg.k-ind.L-text .H{left:110px;top:166px;width:440px;font-size:92px}
+.pg.k-ind.L-text .B{left:590px;right:90px;top:180px;font-size:19px}
+.pg.k-ind.L-statement .H{left:110px;top:166px;max-width:1000px;font-size:104px}
+.pg.k-ind.L-statement .B{left:110px;right:auto;width:440px;top:auto;bottom:80px;border:3px solid var(--acc);padding:22px 24px;font-family:'Oswald',sans-serif;text-transform:uppercase;font-size:22px;line-height:1.3;text-align:center;opacity:1}
+.pg.k-ind.L-statement .B p{margin:0}
+.pg.k-ind .hdr{left:110px;right:90px;top:166px}
+.pg.k-ind .hdr .H{font-size:78px}
+.pg.k-ind.L-list .it{border-top:0;border-left:5px solid var(--acc);padding-left:18px}
+.pg.k-ind.L-list .it .n{color:var(--acc);opacity:1}
+.pg.k-ind.L-list .it b,.pg.k-ind.L-steps .it b{font-family:'Oswald',sans-serif;text-transform:uppercase;font-weight:500;font-size:22px}
+.pg.k-ind.L-steps .it .n{border-radius:0}
+.pg.k-ind.L-table td:first-child{background:rgba(128,128,128,.16)}
+.pg.k-ind.L-table table{left:110px;right:90px;top:340px}
+.pg.k-ind.L-list .items,.pg.k-ind.L-steps .items,.pg.k-ind.L-pieces .tiles,.pg.k-ind.L-colours .sw,.pg.k-ind.L-type .fonts{left:110px;right:90px;top:360px}
+.pg.k-ind.L-divider .num{display:none}
+.pg.k-ind.L-divider .H{left:110px;top:130px;bottom:auto;font-size:150px}
+.pg.k-ind.L-divider .lab{display:none}
+.pg.k-ind .blocks{position:absolute;left:0;right:0;bottom:0;height:280px;display:flex;gap:16px}
+.pg.k-ind .blocks i:nth-child(1){flex:2.3}.pg.k-ind .blocks i:nth-child(2){flex:1}.pg.k-ind .blocks i:nth-child(3){flex:1.5}
+.pg.k-ind.L-piece .l{left:110px;top:166px;width:480px}
+.pg.k-ind.L-piece .H{font-size:78px}
+.pg.k-ind.L-piece .r{top:58px}
+.pg.k-ind.L-cover .hero{left:40px;right:auto;top:30px;bottom:30px;width:720px;background:transparent!important}
+.pg.k-ind.L-cover .hero img{max-height:640px;max-width:680px}
+.pg.k-ind.L-cover .tt{left:auto;right:70px;bottom:64px;text-align:right;max-width:560px}
+.pg.k-ind.L-cover .H{font-size:84px}
+.pg.k-ind.L-cover .brand{left:auto;right:70px;top:60px;font-family:'Oswald',sans-serif;text-transform:uppercase;font-weight:500;background:var(--acc);color:var(--accfg);padding:8px 16px}
+.pg.k-ind.L-closing .H{left:110px;top:140px;font-size:120px}
+.pg.k-ind.L-closing .B{left:110px;top:400px}
+.pg.k-ind.L-closing .contact{left:110px;background:var(--acc);color:var(--accfg);padding:16px 22px;opacity:1;font-weight:600}
+.pg.k-ind.L-quote .q{color:var(--acc);opacity:1;top:90px;left:110px}
+.pg.k-ind.L-quote .H{left:110px;top:220px}
+
+/* ===== Kit: Signal (learned from a road-safety group's brand guidelines) ===== */
+.pg.k-sig .strip{position:absolute;left:0;right:0;bottom:0;height:11px;background:var(--acc)}
+.pg.k-sig.t-accent .strip{background:var(--ink)}
+.pg.k-sig .mark{position:absolute;left:24px;bottom:28px;font-weight:800;font-size:15px;letter-spacing:.14em;text-transform:uppercase}
+.pg.k-sig .lab{left:103px;top:52px;font-size:21px;font-weight:400;letter-spacing:0;text-transform:none;opacity:.85}
+.pg.k-sig .no{top:auto;bottom:32px;right:100px;font-size:13px;opacity:.5}
+.pg.k-sig .foot{display:none}
+.pg.k-sig .H{line-height:1.05}
+.pg.k-sig.L-text .H{left:103px;right:103px;top:90px;width:auto;font-size:58px}
+.pg.k-sig.L-text .B{left:103px;right:103px;top:240px;column-count:2;column-gap:64px;font-size:17px}
+.pg.k-sig .hdr{left:103px;right:103px;top:90px;grid-template-columns:1fr;gap:20px}
+.pg.k-sig .hdr .H{font-size:56px}
+.pg.k-sig .hdr .B{max-width:900px;font-size:17px}
+.pg.k-sig.L-list .items,.pg.k-sig.L-steps .items,.pg.k-sig.L-pieces .tiles,.pg.k-sig.L-colours .sw,.pg.k-sig.L-type .fonts,.pg.k-sig.L-table table{left:103px;right:103px;top:300px;bottom:90px}
+.pg.k-sig.L-table table{bottom:auto;border:1px solid var(--ink)}
+.pg.k-sig.L-table tr:first-child td{background:var(--ink);color:var(--bg0);font-weight:700;font-size:20px}
+.pg.k-sig.L-table td{border-color:var(--ink)}
+.pg.k-sig.L-list .it{border-top:0;background:#212427;color:#fefef4;padding:26px;clip-path:polygon(0 0,100% 0,100% calc(100% - 44px),calc(100% - 44px) 100%,0 100%)}
+.pg.k-sig.L-list .it .n{color:var(--acc);opacity:1}
+.pg.k-sig.L-steps .it .n{border-radius:0}
+.pg.k-sig .tile{clip-path:polygon(44px 0,100% 0,100% 100%,0 100%,0 44px)}
+.pg.k-sig.L-statement .H{left:103px;top:110px;max-width:980px;font-size:96px}
+.pg.k-sig.L-statement .B{left:103px;right:auto;width:620px;top:auto;bottom:120px}
+.pg.k-sig .chev{position:absolute;right:110px;bottom:70px;display:flex}
+.pg.k-sig .chev i{width:46px;height:46px;border-top:16px solid currentColor;border-right:16px solid currentColor;transform:rotate(45deg);margin-left:-4px}
+.pg.k-sig.L-divider .num{display:none}
+.pg.k-sig.L-divider .lab{display:none}
+.pg.k-sig.L-divider .H{left:215px;top:320px;bottom:auto;font-size:62px;max-width:900px}
+.pg.k-sig.L-divider .strip{background:var(--acc)}
+.pg.k-sig.L-cover .tt{left:60px;top:120px;bottom:auto;max-width:380px}
+.pg.k-sig.L-cover .H{font-size:64px;color:var(--acc)}
+.pg.k-sig.L-cover .meta{color:var(--acc);font-size:17px;opacity:.9}
+.pg.k-sig.L-cover .brand{left:60px;top:auto;bottom:60px;color:var(--acc);text-transform:uppercase;letter-spacing:.14em;font-weight:800}
+.pg.k-sig.L-cover .hero{left:470px;right:0;top:0;bottom:0;width:auto;border-radius:0;clip-path:none;padding:110px}
+.pg.k-sig.L-cover .hero img{max-height:420px;max-width:560px}
+.pg.k-sig.L-cover .hero:before,.pg.k-sig.L-cover .hero:after{content:"";position:absolute;width:70px;height:70px;border:18px solid var(--acc)}
+.pg.k-sig.L-cover .hero:before{right:60px;top:60px;border-left:0;border-bottom:0}
+.pg.k-sig.L-cover .hero:after{left:60px;bottom:60px;border-right:0;border-top:0}
+.pg.k-sig.L-closing .H{left:103px;top:110px}
+.pg.k-sig.L-closing .B{left:103px;top:340px}
+.pg.k-sig.L-closing .contact{left:103px;bottom:70px}
+.pg.k-sig.L-piece .l{left:103px;top:90px}

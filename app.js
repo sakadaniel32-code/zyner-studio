@@ -6,6 +6,7 @@ const uid=()=>Math.random().toString(36).slice(2,10);
 const HEX=/^#[0-9a-f]{6}$/i;
 function toast(m,err,ms=3200){const t=$('#toast');t.textContent=m;t.className=err?'err':'';t.style.display='block';clearTimeout(toast.t);if(ms)toast.t=setTimeout(()=>t.style.display='none',ms)}
 function lum(hex){const h=(hex||'#000').replace('#','');if(!/^[0-9a-f]{6}$/i.test(h))return 0;const n=parseInt(h,16);return(0.299*(n>>16&255)+0.587*(n>>8&255)+0.114*(n&255))/255}
+const mix=(a,b,t)=>'#'+[1,3,5].map(i=>Math.round(parseInt(a.substr(i,2),16)*(1-t)+parseInt(b.substr(i,2),16)*t).toString(16).padStart(2,'0')).join('');
 const fg=hex=>lum(hex)>.6?'#111111':'#ffffff';
 function readFile(f,as){return new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(fr.result);as==='text'?fr.readAsText(f):fr.readAsDataURL(f)})}
 async function shrink(u,max=1600){if(!u.startsWith('data:image/')||u.startsWith('data:image/svg'))return u;return new Promise(r=>{const im=new Image();im.onload=()=>{const s=Math.min(1,max/Math.max(im.width,im.height));if(s===1)return r(u);const c=document.createElement('canvas');c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);c.getContext('2d').drawImage(im,0,0,c.width,c.height);r(c.toDataURL('image/png'))};im.onerror=()=>r(u);im.src=u})}
@@ -34,24 +35,31 @@ const ic=(n,s=16)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="no
 
 /* ---------- document engine ---------- */
 function accentOf(p,st){if(HEX.test(p.accent||''))return p.accent;const k=p.pieces.find(x=>x.include&&x.key&&x.colours?.find(c=>HEX.test(c)));if(k)return k.colours.find(c=>HEX.test(c));const c=p.colours.find(c=>HEX.test(c.hex));return c?c.hex:st.t.accent}
-function surf(st,acc,tone){const t=st.t;if(tone==='dark')return[t.dark,'#f3f1ec'];if(tone==='accent')return[acc,fg(acc)];return[t.paper,t.ink]}
-function styleVars(st,acc){const t=st.t;return `--hf:'${t.hf}';--hs:${t.hs};--hw:${t.hw};--hl:${t.hl};--hc:${t.hcase};--cc:${t.ccase};--bf:'${t.bf}';--r:${t.r}px;--acc:${acc};--accfg:${fg(acc)}`}
+function surf(st,acc,tone,deep){const t=st.t;if(tone==='dark')return[t.dark==='auto'?(deep||'#1a1530'):t.dark,'#f3f1ec'];if(tone==='accent')return[acc,fg(acc)];return[t.paper,t.ink]}
+function styleVars(st,acc){const t=st.t;return `--hf:'${t.hf}';--hs:${t.hs};--hw:${t.hw};--hl:${t.hl};--hc:${t.hcase};--cc:${t.ccase};--bf:'${t.bf}';--r:${t.r}px;--acc:${acc};--accfg:${fg(acc)};--ink:${t.ink}`}
 function heroPiece(p){const ok=p.pieces.filter(x=>x.include&&x.files?.length);return ok.find(x=>x.key&&/Symbol|Logo/.test(x.kind))||ok.find(x=>x.key&&/Lockup|Wordmark/.test(x.kind))||ok.find(x=>x.key)||ok[0]}
 function tileOf(x,st){return HEX.test(x.tile||'')?x.tile:(x.colours?.[1]&&HEX.test(x.colours[1])?x.colours[1]:'#e8e5df')}
 function renderPages(p,doc,editable){
  const st=styleBy(doc.style),acc=HEX.test(doc.accent||'')?doc.accent:accentOf(p,st);
  const brand=esc(p.brand.name||p.name),title=esc(p.meta.title||typeBy(doc.type).name);
  const E=(i,f)=>editable?` contenteditable="true" data-ed="${i}.${f}"`:'';
- let n=0,sec=0;const out=[];
+ const K=st.t.kit||'',al=acc.toLowerCase();
+ const uq=[...new Set([...p.colours.map(c=>c.hex),...p.pieces.filter(x=>x.include).flatMap(x=>x.colours||[])].filter(c=>HEX.test(c||'')).map(c=>c.toLowerCase()))];
+ const sat=c=>{const v=[1,3,5].map(i=>parseInt(c.substr(i,2),16));return(Math.max(...v)-Math.min(...v))/255};
+ const deep=uq.find(c=>c!==al&&lum(c)<.25&&sat(c)>.12)||mix(acc,'#0d0b18',.8);
+ const band=[acc,...uq.filter(c=>c!==al&&lum(c)>.04)].slice(0,3);while(band.length<3)band.push(band.length===1?deep:mix(acc,'#ffffff',.55));
+ const secs=doc.pages.filter(x=>x.layout==='divider').map(x=>x.h||'');
+ const two=s=>{s=String(s||'');const m=s.match(/^(.+?[.!?])\s+(\S.*)$/);return K==='campaign'&&m?esc(m[1])+' <span class="a2">'+esc(m[2])+'</span>':esc(s)};
+ let n=0,sec=0,sub=0;const out=[];
  doc.pages.forEach((pg,i)=>{
   const L=LAYOUTS[pg.layout]?pg.layout:'text';n++;
   let tone=pg.tone||(L==='cover'?st.t.cover:L==='divider'?st.t.divider:L==='closing'?st.t.alt:(['statement','quote'].includes(L)&&i%2?st.t.alt:st.t.content));
-  const [bg,fgc]=surf(st,acc,tone);
-  const H=`<h2 class="H"${E(i,'h')}>${esc(pg.h||'')}</h2>`,B=`<div class="B"${E(i,'b')}>${paras(pg.b||'')||(editable?'<p style="opacity:.35">Body text</p>':'')}</div>`;
+  const [bg,fgc]=surf(st,acc,tone,deep);if(L==='divider')sub=0;else if(L!=='cover')sub++;
+  const H=`<h2 class="H"${E(i,'h')}>${two(pg.h)}</h2>`,B=`<div class="B"${E(i,'b')}>${paras(pg.b||'')||(editable?'<p style="opacity:.35">Body text</p>':'')}</div>`;
   const pcs=(pg.pieces||[]).map(id=>p.pieces.find(x=>x.id===id)).filter(x=>x&&x.include);
   const img=(x,k=0)=>x.files?.[k]?`<img src="${x.files[k]}">`:`<b style="font-size:28px;color:${fg(tileOf(x,st))}">${esc(x.name)}</b>`;
   let inner='';
-  if(L==='cover'){const h=heroPiece(p);inner=`<div class="brand">${brand}</div><div class="tt"><h1 class="H"${E(i,'h')}>${esc(pg.h||title)}</h1><div class="meta">${esc(pg.b||[p.meta.client&&'Prepared for '+p.meta.client,(p.meta.author||p.meta.agency)&&'by '+[p.meta.author,p.meta.agency].filter(Boolean).join(', '),p.meta.date].filter(Boolean).join(' · '))}</div></div>${h?`<div class="hero tile" style="background:${tileOf(h,st)===bg?'transparent':tileOf(h,st)}">${img(h)}</div>`:''}`}
+  if(L==='cover'){const h=heroPiece(p);inner=`<div class="brand">${brand}</div><div class="tt"><h1 class="H"${E(i,'h')}>${pg.h?two(pg.h):title}</h1><div class="meta">${esc(pg.b||[p.meta.client&&'Prepared for '+p.meta.client,(p.meta.author||p.meta.agency)&&'by '+[p.meta.author,p.meta.agency].filter(Boolean).join(', '),p.meta.date].filter(Boolean).join(' · '))}</div></div>${h?`<div class="hero tile" style="background:${tileOf(h,st)===bg?'transparent':tileOf(h,st)}">${img(h)}</div>`:''}`}
   else if(L==='statement'||L==='text'||L==='quote'){inner=(L==='quote'?'<div class="q">“</div>':'')+H+B}
   else if(L==='divider'){sec++;inner=H+`<div class="num">${String(sec).padStart(2,'0')}</div>`}
   else if(L==='list'||L==='steps'){const it=(pg.items||[]).slice(0,6);inner=`<div class="hdr">${H}${B}</div><div class="items" style="grid-template-columns:repeat(${L==='steps'?Math.max(it.length,1):Math.min(Math.max(it.length,1),3)},1fr)">${it.map((s,k)=>{const [a,...r]=String(s).split(':');return `<div class="it"><div class="n">${String(k+1).padStart(2,'0')}</div><b>${esc(r.length?a:'')}</b><span>${esc(r.length?r.join(':').trim():a)}</span></div>`}).join('')}</div>`}
@@ -62,8 +70,13 @@ function renderPages(p,doc,editable){
    inner=`<div class="hdr">${H}${B}</div><div class="sw">${u.map(c=>`<div class="s" style="background:${c.hex};color:${fg(c.hex)}">${esc(c.name)}<span>${c.hex.toUpperCase()}</span></div>`).join('')}</div>`}
   else if(L==='type'){const fs=p.fonts.filter(f=>f.name).slice(0,3);inner=`<div class="hdr">${H}${B}</div><div class="fonts" style="grid-template-columns:repeat(${Math.max(fs.length,1)},1fr)">${fs.map(f=>`<div class="fc"><div class="aa" style="font-family:'${esc(f.name)}',var(--hf)">Aa</div><b>${esc(f.name)}</b><span>${esc(f.role||'')}</span></div>`).join('')}</div>`}
   else if(L==='closing'){const h=heroPiece(p);inner=H+B+`<div class="contact">${esc([p.meta.author,p.meta.agency,p.meta.contact].filter(Boolean).join(' · '))}</div>${h&&h.files?.[0]?`<div class="hero tile" style="background:${tileOf(h,st)===bg?'transparent':tileOf(h,st)}">${img(h)}</div>`:''}`}
-  const chrome=L==='cover'?'':`<div class="lab">${esc(pg.label||'')}</div><div class="no">${String(n).padStart(2,'0')}</div><div class="foot"><span>${brand} · ${title}</span><span>${esc(p.meta.agency||p.meta.author||'')}</span></div>`;
-  out.push(`<div class="pg L-${L}${st.t.grain?' grain':''}" style="${styleVars(st,acc)};--bg0:${bg};--fg0:${fgc}">${chrome}${inner}</div>`);
+  const sw=cs=>cs.map(c=>`<i style="background:${c}"></i>`).join('');
+  let chrome=L==='cover'?'':`<div class="lab">${K==='grid'?`<span>${Math.max(sec,1)}.${L==='divider'?0:sub}</span>`:''}${esc(pg.label||'')}</div><div class="no">${String(n).padStart(2,'0')}</div>`+(K==='grid'?`<div class="foot"><span>${n}</span><span>${brand}</span><span>${title}</span></div>`:`<div class="foot"><span>${brand} · ${title}</span><span>${esc(p.meta.agency||p.meta.author||'')}</span></div>`);
+  if(K==='campaign'&&L!=='cover')chrome+='<div class="rule"></div><div class="rule b"></div>';
+  if(K==='grid')chrome+=L==='cover'?`<div class="rule"></div><div class="rule m"></div><div class="stack">${sw(band)}</div>`:`<div class="rule"></div><div class="stripe">${sw(band)}</div>`;
+  if(K==='ind'&&L!=='cover'){chrome+=`<div class="nav">${(secs.length?secs:[brand]).map((s,k)=>`<span${k===sec-1||(!secs.length)?' class="on"':''}>${esc(s)}</span>`).join('<em>/</em>')}</div>`;if(L==='divider')chrome+=`<div class="blocks">${sw([band[0],'#ffffff',band[1]])}</div>`}
+  if(K==='sig'){if(L!=='cover')chrome+=`<div class="strip"></div><div class="mark">${brand}</div>`;if(L==='statement'||L==='closing')chrome+='<div class="chev"><i></i><i></i><i></i></div>'}
+  out.push(`<div class="pg L-${L} t-${tone}${K?' k-'+K:''}${st.t.grain?' grain':''}" style="${styleVars(st,acc)};--bg0:${bg};--fg0:${fgc};--deep:${deep}">${chrome}${inner}</div>`);
  });
  return out;
 }
@@ -341,9 +354,9 @@ function bindPane(p){
 async function learnStyle(){const [f]=await pick('application/pdf');if(!f)return;if(ai().prov!=='gemini')return toast('Reading PDFs needs Gemini. Switch provider in Settings.',1,6000);
  try{toast('Studying '+f.name+'…','',0);const data=await readFile(f);
   const j=parseJSON(await callAI(`Study the attached reference document's visual style and describe it as a reusable presentation style.
-Return JSON: {"name":"2-3 word style name","desc":"one sentence on the look","bestFor":"kinds of brands and documents it suits","guide":"3 to 5 sentences on pacing, how dark/light/colour pages are used, headline tone, density, and how work is shown","t":{"dark":"#hex for dark pages","paper":"#hex for light pages","ink":"#hex text on light pages","accent":"#hex accent colour","hf":"closest heading font from: Archivo, Inter, Fraunces, Space Grotesk","hs":"72% for condensed headings else 100%","hw":400 to 900,"hl":"letter spacing like -0.02em","hcase":"none or uppercase","ccase":"none or uppercase for cover title","bf":"Inter","r":corner radius 0 to 30,"grain":0 or 1,"cover":"dark, paper or accent","divider":"dark, paper or accent","content":"paper or dark","alt":"dark, paper or accent"}}`,'You are an art director who describes visual systems precisely. Return JSON only.',[data]));
+Return JSON: {"name":"2-3 word style name","desc":"one sentence on the look","bestFor":"kinds of brands and documents it suits","guide":"3 to 5 sentences on pacing, how dark/light/colour pages are used, headline tone, density, and how work is shown","t":{"dark":"#hex for dark pages","paper":"#hex for light pages","ink":"#hex text on light pages","accent":"#hex accent colour","hf":"closest heading font from: Archivo, Inter, Inter Tight, Fraunces, Space Grotesk, Montserrat, Oswald","hs":"72% for condensed headings else 100%","hw":400 to 900,"hl":"letter spacing like -0.02em","hcase":"none or uppercase","ccase":"none or uppercase for cover title","bf":"Inter","r":corner radius 0 to 30,"grain":0 or 1,"cover":"dark, paper or accent","divider":"dark, paper or accent","content":"paper or dark","alt":"dark, paper or accent"}}`,'You are an art director who describes visual systems precisely. Return JSON only.',[data]));
   const s={id:'learned-'+uid(),name:j.name||f.name,desc:j.desc||'',bestFor:j.bestFor||'',guide:j.guide||'',t:Object.assign({},STYLES[0].t,j.t||{})};
-  if(!['Archivo','Inter','Fraunces','Space Grotesk'].includes(s.t.hf))s.t.hf='Inter';s.t.bf='Inter';
+  if(!['Archivo','Inter','Inter Tight','Fraunces','Space Grotesk','Montserrat','Oswald'].includes(s.t.hf))s.t.hf='Inter';s.t.bf='Inter';delete s.t.kit;
   S.styles.push(s);save();route();toast('Learned "'+s.name+'". The generator can now pick it.')}catch(e){toast(e.message,1,9000)}}
 
 /* ---------- router ---------- */

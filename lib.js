@@ -17,8 +17,25 @@ window.STYLES = [
  {id:'colour-block', name:'Colour Block', bestFor:'Youth, lifestyle, consumer apps, events, campus brands',
   desc:'The brand colour takes over covers and breaks, rounded tiles, punchy geometric headlines.',
   guide:'Energetic and direct. Covers and section breaks fill with the brand colour. Rounded tiles, chunky geometric headlines, short punchy copy. Mix dark and light pages for rhythm.',
-  t:{dark:'#121212',paper:'#f7f5f0',ink:'#121212',accent:'#ff5a1f',hf:'Space Grotesk',hs:'100%',hw:700,hl:'-0.035em',hcase:'none',ccase:'none',bf:'Inter',r:26,grain:0,cover:'accent',divider:'accent',content:'paper',alt:'dark'}}
+  t:{dark:'#121212',paper:'#f7f5f0',ink:'#121212',accent:'#ff5a1f',hf:'Space Grotesk',hs:'100%',hw:700,hl:'-0.035em',hcase:'none',ccase:'none',bf:'Inter',r:26,grain:0,cover:'accent',divider:'accent',content:'paper',alt:'dark'}},
+ {id:'campaign', name:'Campaign', bestFor:'Movements, nonprofits, social enterprises, community and purpose-led brands, impact reports',
+  desc:'Heavy geometric headlines that switch colour halfway, a deep brand colour on every big moment, and U-shaped panels that hold the copy.',
+  guide:'Loud, warm and human, like a campaign poster. Headlines are two short sentences: the first states it, the second lands it, and the second sentence takes the accent colour. Open sections with full deep-colour pages and one huge headline. Body copy sits inside rounded U-shaped panels or beside them. Use plenty of statement pages and short, staccato sentences. Show people and real work wherever possible.',
+  t:{kit:'campaign',dark:'auto',paper:'#ffffff',ink:'#2b2140',accent:'#f47c2c',hf:'Montserrat',hs:'100%',hw:900,hl:'-0.025em',hcase:'none',ccase:'none',bf:'Montserrat',r:0,grain:0,cover:'dark',divider:'dark',content:'paper',alt:'dark'}},
+ {id:'grid-editorial', name:'Gallery Grid', bestFor:'Brand guidelines, cultural and city brands, institutions, studios, design-led brands',
+  desc:'Pale grey pages on a strict three-column grid, numbered sections in the left column, hairline rules and a brand-colour band along the bottom.',
+  guide:'Quiet, exact and gallery-like. Every page uses the same grid: a numbered section title in the left column (like 5.2), copy in the middle column, work across the right two columns. Headlines are short and factual in a medium-weight grotesk, never shouty. Hairline rules separate header from content. The brand colours appear as a thin band at the foot of every page and as a stacked swatch on the cover. Dark pages only for the cover, section openers and the thank-you page.',
+  t:{kit:'grid',dark:'#141417',paper:'#e6e4e4',ink:'#0d0d0f',accent:'#e0b942',hf:'Inter Tight',hs:'100%',hw:500,hl:'-0.035em',hcase:'none',ccase:'none',bf:'Inter Tight',r:0,grain:0,cover:'dark',divider:'dark',content:'paper',alt:'dark'}},
+ {id:'industrial', name:'Industrial', bestFor:'Engineering, construction, energy, logistics, manufacturing, B2B services and corporate guides',
+  desc:'Tall condensed uppercase headlines, a black navigation bar across the top of every page, boxed callouts and hard colour blocks.',
+  guide:'Strong, direct and corporate. Every page carries a black bar listing the document sections, with the current one in the accent colour. Each headline has a small accent kicker above it naming the section. Headlines are tall, condensed and uppercase; body copy is plain and practical. Put the one line that matters in an outlined accent box. Section openers are black with full-width colour blocks. Use tables and spec-style lists freely. No rounded corners.',
+  t:{kit:'ind',dark:'#000000',paper:'#ffffff',ink:'#000000',accent:'#d3222a',hf:'Oswald',hs:'100%',hw:500,hl:'0',hcase:'uppercase',ccase:'uppercase',bf:'Source Sans 3',r:0,grain:0,cover:'dark',divider:'dark',content:'paper',alt:'dark'}},
+ {id:'signal', name:'Signal', bestFor:'Safety, infrastructure, mobility, tech and any brand built on one high-visibility colour',
+  desc:'Warm white pages, bold sans headlines top left, one high-visibility accent, cut-corner panels, corner brackets and a colour strip along the bottom.',
+  guide:'Clear, reliable and visible. Headlines sit top left and say the point plainly. Content pages are warm white with the accent as a strip along the bottom edge and the brand name small in the corner. Dark pages open sections with just the section name. Group points in dark panels with one cut corner. Frame key images with accent corner brackets. Use do and don\u2019t comparisons, tables with a dark header row, and triple chevrons to point forward. Keep copy short and direct.',
+  t:{kit:'sig',dark:'#212427',paper:'#fefef4',ink:'#212427',accent:'#e0ff00',hf:'Inter',hs:'100%',hw:700,hl:'-0.025em',hcase:'none',ccase:'none',bf:'Inter',r:0,grain:0,cover:'dark',divider:'dark',content:'paper',alt:'accent'}}
 ];
+
 
 window.DOCTYPES = [
  {id:'identity', name:'Brand identity concept', short:'Present a new identity and the thinking behind it.', tint:'#d2571f',
