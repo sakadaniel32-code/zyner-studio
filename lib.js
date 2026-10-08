@@ -33,8 +33,13 @@ window.STYLES = [
  {id:'signal', name:'Signal', bestFor:'Safety, infrastructure, mobility, tech and any brand built on one high-visibility colour',
   desc:'Warm white pages, bold sans headlines top left, one high-visibility accent, cut-corner panels, corner brackets and a colour strip along the bottom.',
   guide:'Clear, reliable and visible. Headlines sit top left and say the point plainly. Content pages are warm white with the accent as a strip along the bottom edge and the brand name small in the corner. Dark pages open sections with just the section name. Group points in dark panels with one cut corner. Frame key images with accent corner brackets. Use do and don\u2019t comparisons, tables with a dark header row, and triple chevrons to point forward. Keep copy short and direct.',
-  t:{kit:'sig',dark:'#212427',paper:'#fefef4',ink:'#212427',accent:'#e0ff00',hf:'Inter',hs:'100%',hw:700,hl:'-0.025em',hcase:'none',ccase:'none',bf:'Inter',r:0,grain:0,cover:'dark',divider:'dark',content:'paper',alt:'accent'}}
+  t:{kit:'sig',dark:'#212427',paper:'#fefef4',ink:'#212427',accent:'#e0ff00',hf:'Inter',hs:'100%',hw:700,hl:'-0.025em',hcase:'none',ccase:'none',bf:'Inter',r:0,grain:0,cover:'dark',divider:'dark',content:'paper',alt:'accent'}},
+ {id:'poster', name:'Poster', bestFor:'Apps, consumer tech, youth and social brands, media, anything built on one loud signature colour',
+  desc:'Full-bleed signature-colour cover and closing, huge condensed uppercase type, black section breaks and soft grey cards on the right half of white pages.',
+  guide:'Bold, simple and confident, like an app brand book. The cover and the thank-you page are flooded with the signature colour and carry one giant condensed uppercase line at the bottom left. Sections open on plain black pages with the title at the bottom left. Content pages are white: a small running header across the top, the headline top left in condensed caps, a short explanation in the left column, and the work, rules or specs stacked in soft grey rounded cards on the right half. Keep words few and use clear do and don\u2019t lists.',
+  t:{kit:'poster',dark:'#000000',paper:'#ffffff',ink:'#000000',accent:'#fffc00',hf:'Barlow Condensed',hs:'100%',hw:700,hl:'0',hcase:'uppercase',ccase:'uppercase',bf:'DM Sans',r:10,grain:0,cover:'accent',divider:'dark',content:'paper',alt:'accent'}}
 ];
+
 
 
 window.DOCTYPES = [
