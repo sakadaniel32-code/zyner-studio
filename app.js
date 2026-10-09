@@ -84,7 +84,26 @@ function renderPages(p,doc,editable){
 }
 
 /* rule-based builder (works with no AI key) */
+function notesDoc(p,styleId){
+ const pcs=p.pieces.filter(x=>x.include),key=pcs.filter(x=>x.key),sup=pcs.filter(x=>!x.key),logos=pcs.filter(x=>/Logo|Wordmark|Symbol|Lockup/.test(x.kind));
+ const pg=[],add=(layout,o)=>pg.push(Object.assign({layout},o));
+ add('cover',{});
+ sections(p.notes).forEach((s,i)=>{
+  if(s.b.split(/\s+/).length<=22){add('statement',{label:s.h||'The idea',h:s.b,b:''});return}
+  const first=s.b.split(/(?<=[.!?])\s+/)[0];let h=s.h,b=s.b;
+  if(!h){if(first.length<=90&&first.length<s.b.length){h=first;b=s.b.slice(first.length).trim()}else h=i?'More thinking':'The idea'}
+  chunks(b).forEach((c,k)=>add(i===0&&k===0&&!s.h?'statement':'text',{label:s.h||(i?'Notes':'The idea'),h:k?h+' (continued)':h,b:c}))});
+ const div={identity:'The identity',logo:'The logo',guide:'The brand',case:'The work'}[p.type];
+ const show=p.type==='logo'?logos:key,rest=p.type==='logo'?pcs.filter(x=>!logos.includes(x)):sup;
+ if(show.length||rest.length){if(div)add('divider',{h:div});show.forEach(x=>add('piece',{label:x.kind,h:x.name,b:x.note||'',pieces:[x.id]}));if(rest.length)add('pieces',{label:'In use',h:p.type==='logo'?'In use':'Supporting pieces',pieces:rest.map(x=>x.id)})}
+ if(p.colours.length||pcs.some(x=>x.colours?.length))add('colours',{label:'Colour',h:'Colour',b:''});
+ if(p.fonts.some(f=>f.name))add('type',{label:'Typography',h:'Typography',b:''});
+ const det=p.details.filter(d=>d.label||d.value).map(d=>[d.label,d.value]);if(det.length)add('table',{label:'Details',h:'Details',rows:det});
+ add('closing',{h:{proposal:'Next steps',case:'The result'}[p.type]||'Thank you',b:''});
+ return {id:uid(),at:Date.now(),type:p.type,style:styleId,accent:'',why:'',pages:pg};
+}
 function basicDoc(p,styleId){
+ if((p.notes||'').trim())return notesDoc(p,styleId);
  const b=p.brand,pcs=p.pieces.filter(x=>x.include),key=pcs.filter(x=>x.key),sup=pcs.filter(x=>!x.key),logos=pcs.filter(x=>/Logo|Wordmark|Symbol|Lockup/.test(x.kind));
  const pg=[],add=(layout,o)=>pg.push(Object.assign({layout},o));
  const det=p.details.filter(d=>d.label||d.value).map(d=>[d.label,d.value]);
@@ -152,24 +171,20 @@ async function callAI(user,system,pdfs=[]){const c=ai();if(!c.key)throw Error('A
  const j=await r.json();if(!r.ok)throw Error('Claude: '+(j.error?.message||r.status));return j.content.map(x=>x.text||'').join('')}
 function parseJSON(t){t=t.trim().replace(/^```(json)?/i,'').replace(/```$/,'').trim();return JSON.parse(t.slice(t.indexOf('{'),t.lastIndexOf('}')+1))}
 const WRITER=`You are a senior brand strategist and art director building a presentation document. Write like a sharp consultant explaining their thinking to a smart client: plain words, specific reasons, short sentences, the why behind each decision.
-Rules: use only facts found in the brief, notes and reference files; never invent statistics, clients, prices, dates or claims. If something is missing, leave that page out rather than making it up. No buzzwords or filler (elevate, seamless, vibrant, robust, leverage, journey, cutting-edge, game-changer, in today's world, testament, unlock). No em dashes or en dashes. No exclamation marks. Headlines are declarative takeaways in sentence case, 2 to 8 words. Return valid JSON only.`;
+Rules: use only facts found in the brief, notes and reference files; never invent statistics, clients, prices, dates or claims. If something is missing, leave that page out rather than making it up. No buzzwords or filler (elevate, seamless, vibrant, robust, leverage, journey, cutting-edge, game-changer, in today's world, testament, unlock). No em dashes or en dashes. No exclamation marks. Headlines are declarative takeaways in sentence case, 2 to 8 words.
+The main source is the designer's own loose writing. They think out loud, so it may be messy, repetitive, half-finished or in no particular order. Turn it into clear, confident page copy in their voice, written as the designer presenting to the client (we/I as they use it). Keep every specific reason, detail and decision they gave, sharpen the wording, cut repetition, and spread the thinking across the right pages. Never add facts, claims or reasons they did not give. Pull the client name, tagline and audience from the writing when they appear. Use asset notes for the piece pages. Return valid JSON only.`;
 function briefText(p){const b=p.brand;const txt=p.refs.filter(f=>f.kind==='text').map(f=>`--- ${f.name} ---\n${f.data.slice(0,20000)}`).join('\n\n');
+ const old=[['Tagline',b.tagline],['About',b.about],['Problem',b.problem],['Audience',b.audience],['Perception',b.perception],['Voice',b.voice]].filter(x=>(x[1]||'').trim()).map(x=>x[0]+': '+x[1]).join('\n');
  return `DOCUMENT TYPE: ${typeBy(p.type).name}
-BRAND: ${b.name||p.name}
-TAGLINE: ${b.tagline}
-WHAT IT IS / DOES: ${b.about}
-WHAT IT SOLVES: ${b.problem}
-WHO IT IS FOR: ${b.audience}
-HOW IT SHOULD BE PERCEIVED: ${b.perception}
-VOICE: ${b.voice}
-CLIENT: ${p.meta.client}   PREPARED BY: ${[p.meta.author,p.meta.agency].filter(Boolean).join(', ')}
+BRAND / PROJECT: ${b.name||p.name}
+CLIENT: ${p.meta.client||'(find it in the writing if mentioned)'}   PREPARED BY: ${[p.meta.author,p.meta.agency].filter(Boolean).join(', ')}
+THE DESIGNER'S WRITING (raw, written loosely in their own words; this is your main source):
+${p.notes||'(none)'}${old?'\n'+old:''}
 PIECES (id | kind | name | key or supporting | part of | colours | has image | note):
 ${p.pieces.filter(x=>x.include).map(x=>`${x.id} | ${x.kind} | ${x.name} | ${x.key?'key':'supporting'} | ${p.pieces.find(y=>y.id===x.parent)?.name||'-'} | ${(x.colours||[]).join(' ')} | ${x.files?.length?'yes':'no'} | ${x.note||''}`).join('\n')||'none'}
 COLOURS: ${p.colours.map(c=>c.name+' '+c.hex).join(', ')||'none'}
 TYPEFACES: ${p.fonts.map(f=>f.name+' ('+(f.role||'')+')').join(', ')||'none'}
-DETAILS: ${p.details.map(d=>d.label+': '+d.value).join('; ')||'none'}
-NOTES:
-${p.notes||'(none)'}${txt?'\nREFERENCE FILES:\n'+txt:''}`}
+DETAILS: ${p.details.map(d=>d.label+': '+d.value).join('; ')||'none'}${txt?'\nREFERENCE FILES:\n'+txt:''}`}
 async function aiDoc(p,styleChoice){
  const sts=allStyles(),t=typeBy(p.type);
  const user=`${briefText(p)}
@@ -195,9 +210,9 @@ Return JSON: {"style":"style-id","why":"one sentence","pages":[{"layout":"","lab
 }
 function autoStyle(p){const t=p.type;return t==='guide'||t==='proposal'?'swiss-clean':t==='pitch'?'colour-block':'editorial-dark'}
 async function generate(p,btn){
- if(btn)btn.disabled=true;
+ if(btn)btn.disabled=true;if(!p.brand.name)p.brand.name=p.name;
  try{let d;if(ai().key){toast('Planning pages and writing…','',0);d=await aiDoc(p,p.style);toast('Done. Click any text on the pages to edit it.')}
-  else{d=basicDoc(p,p.style==='auto'?autoStyle(p):p.style);d.why='Built without AI from what you filled in. Add an AI key in Settings for written copy and automatic style choice.';toast('Built from your inputs. Add an AI key for written copy.','',5000)}
+  else{d=basicDoc(p,p.style==='auto'?autoStyle(p):p.style);d.why='Your writing went in as written. Add a free Gemini key in Settings and Generate will tidy it into page copy.';toast('Built from your writing as it is. Add an AI key to have it tidied up.','',5000)}
   p.docs.unshift(d);p.docs=p.docs.slice(0,12);p.current=d.id;p.updated=Date.now();save();return d}
  catch(e){toast(e.message,1,9000)}finally{if(btn)btn.disabled=false}}
 
@@ -289,7 +304,7 @@ function newModal(type){let sel=type||'identity';const m=$('#modal');
  draw();m.classList.add('on');m.onclick=e=>{if(e.target===m)m.classList.remove('on')}}
 
 /* ---------- workspace ---------- */
-let W={step:'brand',pid:''};
+let W={step:'write',pid:''};
 function vWork(p){const docId=new URLSearchParams(location.hash.split('?')[1]).get('doc');if(docId&&p.docs.find(d=>d.id===docId))p.current=docId;
  const doc=p.docs.find(d=>d.id===p.current)||p.docs[0];
  const sname=p.style==='auto'?'Let it choose':styleBy(p.style).name;
@@ -303,10 +318,27 @@ function vWork(p){const docId=new URLSearchParams(location.hash.split('?')[1]).g
  <div class="wbody"><div class="phone"><div class="notch"><i></i></div><div class="steps" id="steps"></div><div class="pane" id="pane"></div>
  <div class="phfoot"><button class="btn" id="prevstep">Back</button><button class="btn pri" id="nextstep">Next</button></div></div>
  <div class="canvas">${doc?(doc.why?`<div class="why"><span class="stamp">Style</span><b>${esc(styleBy(doc.style).name)}</b><span class="w">${esc(doc.why)}</span></div>`:''):''}<div class="docw" id="docw">${doc?renderPages(p,doc,true).map(x=>`<div class="pgwrap">${x}</div>`).join(''):`<div class="empty" style="margin-top:40px"><span class="stamp" style="color:var(--or2);display:block;margin-bottom:8px">Nothing generated yet</span><b style="color:#fff;font-size:18px;letter-spacing:-.02em">Fill in what you have, then Generate</b><br>Nothing is required. Empty sections are left out of the document.</div>`}</div></div></div></div>`}
-const STEPS=[['brand','Brand'],['pieces','Pieces'],['look','Colour & type'],['notes','Notes'],['details','Details'],['people','Credits']];
-function stepDone(p,s){const b=p.brand;return{brand:!!(b.name&&b.about),pieces:p.pieces.length>0,look:p.colours.length+p.fonts.length>0,notes:!!(p.notes||p.refs.length),details:p.details.length>0,people:!!(p.meta.author||p.meta.agency)}[s]}
+const STEPS=[['write','Your thinking'],['pieces','Assets'],['look','Colour & type']];
+const GIST={identity:['The big idea','What the brand needs to solve',"Who it's for",'The idea behind the logo','Why these colours and type','How it should feel'],
+logo:['Where the idea came from','How the logo was built','Why this shape','How it works small and large','The colours'],
+guide:['Who the brand is','How it should be seen','How to use the logo','Colour and type rules','How it sounds'],
+proposal:['What I heard from the client','How I would approach it','What they get','Timeline','Price'],
+pitch:['The problem','The solution',"Who it's for",'Traction so far','The ask'],
+strategy:['Purpose','Positioning','Audience','Personality','Voice'],
+brief:['Background','The goal','Audience','What to make','Must haves'],
+case:['The challenge','What I did','Why it works','The result']};
+const WPH={identity:"e.g. Aiben runs four services, so the identity had to hold them together. I built a spark that sits inside every product icon because it says something is about to move...",
+logo:"e.g. The mark started from the first letter of the name. I kept the curves soft because the brand is for families...",
+proposal:"e.g. On our call they said customers don't trust them online yet. I'd start with a short discovery week, then...",
+pitch:"e.g. Small shops in Lagos lose sales because they can't take cards. We built...",
+case:"e.g. They came to me with three logos used in three different ways. I pulled it into one system..."};
+function sections(t){const out=[];let cur={h:'',t:[]};(t||'').split(/\r?\n/).forEach(l=>{const m=l.match(/^\s*([A-Z][^:\n]{1,55}):\s*(.*)$/);if(m&&!/^https?$/i.test(m[1])){if(cur.h||cur.t.join('').trim())out.push(cur);cur={h:m[1].trim(),t:m[2]?[m[2]]:[]}}else cur.t.push(l)});if(cur.h||cur.t.join('').trim())out.push(cur);return out.map(s=>({h:s.h,b:s.t.join('\n').replace(/\n{3,}/g,'\n\n').trim()})).filter(s=>s.b)}
+function chunks(b,max=85){const ps=b.split(/\n\s*\n/);const out=[];let cur=[],n=0;ps.forEach(x=>{const w=x.split(/\s+/).length;if(n&&n+w>max){out.push(cur.join('\n\n'));cur=[];n=0}cur.push(x);n+=w});if(cur.length)out.push(cur.join('\n\n'));return out}
+function migrate(p){if(p._mig)return;p._mig=1;const b=p.brand;const parts=[['The line',b.tagline],['The idea',b.about],['What it solves',b.problem],["Who it's for",b.audience],['How it should feel',b.perception],['How it sounds',b.voice]].filter(x=>(x[1]||'').trim());
+ if(parts.length){p.notes=parts.map(([h,t])=>h+':\n'+t.trim()).join('\n\n')+((p.notes||'').trim()?'\n\n'+p.notes.trim():'');['tagline','about','problem','audience','perception','voice'].forEach(k=>b[k]='');save()}}
+function stepDone(p,s){return{write:(p.notes||'').trim().split(/\s+/).length>=25,pieces:p.pieces.length>0,look:p.colours.length+p.fonts.length>0||p.pieces.some(x=>x.colours?.some(c=>HEX.test(c)))}[s]}
 function bindWork(p){
- if(W.pid!==p.id){W.pid=p.id;W.step='brand'}
+ migrate(p);if(W.pid!==p.id){W.pid=p.id;W.step='write'}if(!STEPS.some(s=>s[0]===W.step))W.step='write';
  const touch=()=>{p.updated=Date.now();save()};
  $('#pname').oninput=e=>{p.name=e.target.value;touch()};
  $('#ptype').onchange=e=>{p.type=e.target.value;touch();drawPane(p)};
@@ -330,11 +362,17 @@ function fld(label,path,o={}){const v=path.split('.').reduce((a,k)=>a?.[k],o.obj
 function drawPane(p){
  $('#steps').innerHTML=STEPS.map(([k,l],n)=>`<button class="st ${W.step===k?'on':''}" data-s="${k}"><span class="n">0${n+1}<span class="d ${stepDone(p,k)?'ok':''}"></span></span>${l}</button>`).join('');
  $$('#steps .st').forEach(b=>b.onclick=()=>{W.step=b.dataset.s;drawPane(p)});
- $('#nextstep').textContent=W.step==='people'?'Generate':'Next';
+ $('#nextstep').textContent=W.step===STEPS.at(-1)[0]?'Generate':'Next';
  const o={obj:p};let h='';
- if(W.step==='brand')h=`<p class="hint">Start with the core: what it is, what it solves, how it should be seen. Skip anything you don't have.</p>${fld('Brand name','brand.name',o)}${fld('Tagline or one-line idea','brand.tagline',{...o,ph:'The line you want people to remember'})}${fld('What it is and what it does','brand.about',{...o,area:1})}${fld('What problem it solves','brand.problem',{...o,area:1})}${fld('Who it is for','brand.audience',{...o,area:1,rows:64})}${fld('How it should be perceived','brand.perception',{...o,area:1,rows:64})}${fld('How it sounds','brand.voice',{...o,area:1,rows:64,ph:'e.g. warm, direct, a bit playful'})}`;
- if(W.step==='pieces')h=`<p class="hint">List every piece you have: logos, symbols, sub-brands, products, icons, patterns, mockups. Mark the key ones. Link a piece to another only if it belongs to it.</p><div id="plist">${p.pieces.map((x,i)=>pieceCard(p,x,i)).join('')}</div><div class="row" style="flex-wrap:wrap"><button class="btn sm" id="addp">${ic('plus',13)} Add piece</button><button class="btn sm ghost" id="bulk">${ic('upload',13)} Upload several</button></div>`;
- if(W.step==='look')h=`<p class="hint">Brand colours and typefaces. Piece colours are added on their own.</p><label class="l">Colours</label><div id="clist">${p.colours.map((c,i)=>`<div class="kv" style="grid-template-columns:auto 1fr 1fr auto"><span class="cdot" style="background:${HEX.test(c.hex)?c.hex:'#000'}"><input type="color" data-ci="${i}" data-cf="hex" value="${HEX.test(c.hex)?c.hex:'#000000'}"></span><input class="f" data-ci="${i}" data-cf="name" value="${esc(c.name)}" placeholder="Name"><input class="f" data-ci="${i}" data-cf="hex" value="${esc(c.hex)}" placeholder="#000000"><button class="x" data-cdel="${i}">×</button></div>`).join('')}</div><button class="btn sm" id="addc">${ic('plus',13)} Add colour</button>
+ if(W.step==='write'){const G=GIST[p.type]||GIST.identity,n=(p.notes||'').trim().split(/\s+/).filter(Boolean).length;
+  h=`<p class="hint">Write it the way you'd explain it to the client across the table. Rough is fine: half sentences, the reasons, the story behind it.</p>
+  <span class="stamp gh">Worth covering · tap to add a heading</span><div class="gists">${G.map((g,i)=>`<button class="gist ${(p.notes||'').includes(g+':')?'done':''}" data-g="${esc(g)}"><span class="stamp">0${i+1}</span>${esc(g)}</button>`).join('')}</div>
+  <textarea class="f write" data-f="notes" placeholder="${esc(WPH[p.type]||WPH.identity)}">${esc(p.notes||'')}</textarea>
+  <div class="wmeta"><span class="stamp" id="wc">${n} words</span><span class="stamp ${ai().key?'on':''}">${ai().key?'● AI will tidy this up':'AI off: goes in as written'}</span></div>
+  <label class="l">Brief or notes files (optional)</label><button class="btn sm" id="addr">${ic('upload',13)} Add files</button><div style="margin-top:8px">${p.refs.map((f,i)=>`<div class="kv" style="grid-template-columns:1fr auto"><span style="font-size:12.5px;padding:8px 10px;background:#1d1d1d;border-radius:10px">${esc(f.name)} <span class="chipt">${f.kind==='pdf'?'PDF':'text'}</span></span><button class="x" data-rdel="${i}">×</button></div>`).join('')}</div>
+  <details class="cover"><summary class="stamp">+ Cover details · optional</summary>${fld('Prepared for','meta.client',{...o,ph:'Client name'})}<div class="two"><div>${fld('Prepared by','meta.author',o)}</div><div>${fld('Studio','meta.agency',o)}</div></div>${fld('Date','meta.date',o)}</details>`}
+ if(W.step==='pieces')h=`<p class="hint">Drop in your logos and brand assets and give each one a name. This is the only place you label anything. Mark the ones you want to feature as Key.</p><div id="plist">${p.pieces.map((x,i)=>pieceCard(p,x,i)).join('')}</div><div class="row" style="flex-wrap:wrap"><button class="btn sm" id="addp">${ic('plus',13)} Add piece</button><button class="btn sm ghost" id="bulk">${ic('upload',13)} Upload several</button></div>`;
+ if(W.step==='look')h=`<p class="hint">Optional. Colours on your assets are picked up automatically. Add anything extra here.</p><label class="l">Colours</label><div id="clist">${p.colours.map((c,i)=>`<div class="kv" style="grid-template-columns:auto 1fr 1fr auto"><span class="cdot" style="background:${HEX.test(c.hex)?c.hex:'#000'}"><input type="color" data-ci="${i}" data-cf="hex" value="${HEX.test(c.hex)?c.hex:'#000000'}"></span><input class="f" data-ci="${i}" data-cf="name" value="${esc(c.name)}" placeholder="Name"><input class="f" data-ci="${i}" data-cf="hex" value="${esc(c.hex)}" placeholder="#000000"><button class="x" data-cdel="${i}">×</button></div>`).join('')}</div><button class="btn sm" id="addc">${ic('plus',13)} Add colour</button>
   <label class="l" style="margin-top:20px">Typefaces</label>${p.fonts.map((f,i)=>`<div class="kv"><input class="f" data-fi="${i}" data-ff="name" value="${esc(f.name)}" placeholder="Typeface name"><input class="f" data-fi="${i}" data-ff="role" value="${esc(f.role)}" placeholder="Headlines, body…"><button class="x" data-fdel="${i}">×</button></div>`).join('')}<button class="btn sm" id="addf">${ic('plus',13)} Add typeface</button>
   <label class="l" style="margin-top:20px">Document accent (optional)</label><div class="row"><span class="cdot" style="background:${HEX.test(p.accent)?p.accent:'#222'}"><input type="color" id="accp" value="${HEX.test(p.accent)?p.accent:'#000000'}"></span><input class="f" id="acc" value="${esc(p.accent)}" placeholder="Uses the first key piece colour if empty"></div>`;
  if(W.step==='notes')h=`<p class="hint">Dump everything: the brief, your reasoning, client conversations, the why behind each decision. The AI writes only from what's here and in your files.</p>${fld('Notes and explanations','notes',{...o,area:1,rows:260})}<label class="l">Reference files (.txt, .md, .pdf)</label><button class="btn sm" id="addr">${ic('upload',13)} Add files</button><div style="margin-top:8px">${p.refs.map((f,i)=>`<div class="kv" style="grid-template-columns:1fr auto"><span style="font-size:12.5px;padding:8px 10px;background:#1b1b1b;border-radius:8px">${esc(f.name)} <span class="chipt">${f.kind==='pdf'?'PDF, Gemini only':'text'}</span></span><button class="x" data-rdel="${i}">×</button></div>`).join('')}</div>`;
@@ -351,6 +389,9 @@ function pieceCard(p,x,i){const others=p.pieces.filter(y=>y.id!==x.id);return `<
 function bindPane(p){
  const touch=()=>{p.updated=Date.now();save()},redraw=()=>{touch();drawPane(p)};
  $$('[data-f]').forEach(el=>el.oninput=()=>{const ks=el.dataset.f.split('.');let t=p;ks.slice(0,-1).forEach(k=>t=t[k]);t[ks.at(-1)]=el.value;touch()});
+ const wc=()=>{const e=$('#wc');if(e)e.textContent=(p.notes||'').trim().split(/\s+/).filter(Boolean).length+' words'};
+ const wta=$('textarea.write');if(wta){wta.addEventListener('input',wc);wta.addEventListener('blur',()=>$('#steps').querySelectorAll('.st').forEach((b,k)=>b.querySelector('.d').classList.toggle('ok',stepDone(p,STEPS[k][0]))))}
+ $$('.gist').forEach(g=>g.onclick=()=>{const ta=$('textarea.write');const v=ta.value.replace(/\s+$/,'');ta.value=(v?v+'\n\n':'')+g.dataset.g+':\n';p.notes=ta.value;touch();g.classList.add('done');ta.focus();ta.setSelectionRange(ta.value.length,ta.value.length);ta.scrollTop=ta.scrollHeight;wc()});
  $$('[data-f]').forEach(el=>el.onchange=()=>{$('#steps').querySelectorAll('.st').forEach((b,k)=>b.querySelector('.d').classList.toggle('ok',stepDone(p,STEPS[k][0])))});
  const P=i=>p.pieces[i];
  $$('[data-pf]').forEach(el=>{el.oninput=el.onchange=()=>{P(el.dataset.pi)[el.dataset.pf]=el.value;touch()}});
