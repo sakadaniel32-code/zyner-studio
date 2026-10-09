@@ -163,8 +163,17 @@ const AIDEF={gemini:'gemini-2.5-flash',openai:'gpt-4o-mini',anthropic:'claude-3-
 const ai=()=>{const prov=localStorage.zsProv||'gemini';return{prov,key:localStorage['zsKey_'+prov]||'',model:localStorage['zsModel_'+prov]||AIDEF[prov]}};
 async function callAI(user,system,pdfs=[]){const c=ai();if(!c.key)throw Error('Add your AI key in Settings first');
  if(c.prov==='gemini'){const parts=[{text:user},...pdfs.map(d=>({inline_data:{mime_type:'application/pdf',data:d.split(',')[1]}}))];
-  const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(c.model)}:generateContent?key=${encodeURIComponent(c.key)}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({systemInstruction:{parts:[{text:system}]},contents:[{role:'user',parts}],generationConfig:{responseMimeType:'application/json',temperature:.7}})});
-  const j=await r.json();if(!r.ok)throw Error('Gemini: '+(j.error?.message||r.status));return j.candidates?.[0]?.content?.parts?.map(x=>x.text||'').join('')||''}
+  const body=JSON.stringify({systemInstruction:{parts:[{text:system}]},contents:[{role:'user',parts}],generationConfig:{responseMimeType:'application/json',temperature:.7}});
+  const once=async m=>{const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(m.replace(/^models\//,''))}:generateContent?key=${encodeURIComponent(c.key)}`,{method:'POST',headers:{'Content-Type':'application/json'},body});
+   const j=await r.json().catch(()=>({}));if(!r.ok){const e=Error('Gemini: '+(j.error?.message||r.status));e.busy=[429,500,503,504].includes(r.status)||/high demand|overloaded|unavailable|try again later|quota|exhausted/i.test(j.error?.message||'');throw e}
+   const t=j.candidates?.[0]?.content?.parts?.map(x=>x.text||'').join('')||'';if(!t){const e=Error('Gemini sent back an empty reply.');e.busy=true;throw e}return t};
+  const wait=ms=>new Promise(r=>setTimeout(r,ms));let last;
+  for(const d of [0,2500,6000]){if(d){toast('Gemini is busy. Trying again…','',0);await wait(d)}try{return await once(c.model)}catch(e){last=e;if(!e.busy)throw e}}
+  try{const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models?pageSize=200&key=${encodeURIComponent(c.key)}`);const j=await r.json();
+   const alts=(j.models||[]).filter(m=>(m.supportedGenerationMethods||[]).includes('generateContent')).map(m=>m.name.replace(/^models\//,'')).filter(n=>/gemini/.test(n)&&/flash|pro/.test(n)&&!/image|tts|audio|live|embedding|vision|thinking-exp|robotics|computer/.test(n)&&n!==c.model.replace(/^models\//,''))
+    .sort((a,b)=>(/preview|exp/.test(a)-/preview|exp/.test(b))||(/pro/.test(a)-/pro/.test(b))||(/lite/.test(a)-/lite/.test(b)));
+   for(const m of alts.slice(0,5)){toast('Gemini is busy. Trying '+m+'…','',0);try{const t=await once(m);toast('Written with '+m+' because your usual model was busy.','',4000);return t}catch(e){last=e;if(!e.busy)break}}}catch(e){}
+  throw Error('Gemini is overloaded right now on every model I tried. Give it a few minutes and hit Generate again. ('+last.message.replace(/^Gemini: /,'')+')')}
  if(c.prov==='openai'){const r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+c.key},body:JSON.stringify({model:c.model,response_format:{type:'json_object'},messages:[{role:'system',content:system},{role:'user',content:user}]})});
   const j=await r.json();if(!r.ok)throw Error('OpenAI: '+(j.error?.message||r.status));return j.choices[0].message.content}
  const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':c.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:c.model,max_tokens:8000,system,messages:[{role:'user',content:user}]})});
