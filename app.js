@@ -49,7 +49,7 @@ function renderPages(p,doc,editable){
  const deep=uq.find(c=>c!==al&&lum(c)<.25&&sat(c)>.12)||mix(acc,'#0d0b18',.8);
  const band=[acc,...uq.filter(c=>c!==al&&lum(c)>.04)].slice(0,3);while(band.length<3)band.push(band.length===1?deep:mix(acc,'#ffffff',.55));
  const secs=doc.pages.filter(x=>x.layout==='divider').map(x=>x.h||'');
- const two=s=>{s=String(s||'');const m=s.match(/^(.+?[.!?])\s+(\S.*)$/);return K==='campaign'&&m?esc(m[1])+' <span class="a2">'+esc(m[2])+'</span>':esc(s)};
+ const two=s=>{s=String(s||'');const m=s.match(/^(.+?[.!?])\s+(\S.*)$/);return (K==='campaign'||K==='airy')&&m?esc(m[1])+' <span class="a2">'+esc(m[2])+'</span>':esc(s)};
  let n=0,sec=0,sub=0;const out=[];
  doc.pages.forEach((pg,i)=>{
   const L=LAYOUTS[pg.layout]?pg.layout:'text';n++;
@@ -75,6 +75,8 @@ function renderPages(p,doc,editable){
   if(K==='campaign'&&L!=='cover')chrome+='<div class="rule"></div><div class="rule b"></div>';
   if(K==='grid')chrome+=L==='cover'?`<div class="rule"></div><div class="rule m"></div><div class="stack">${sw(band)}</div>`:`<div class="rule"></div><div class="stripe">${sw(band)}</div>`;
   if(K==='ind'&&L!=='cover'){chrome+=`<div class="nav">${(secs.length?secs:[brand]).map((s,k)=>`<span${k===sec-1||(!secs.length)?' class="on"':''}>${esc(s)}</span>`).join('<em>/</em>')}</div>`;if(L==='divider')chrome+=`<div class="blocks">${sw([band[0],'#ffffff',band[1]])}</div>`}
+  if(K==='pop'&&L!=='cover')chrome+=`<div class="hd"><span>${brand}</span><span>${esc(pg.label||(L==='divider'?pg.h:'')||'')}</span><span>${title}</span><span>${String(n).padStart(3,'0')}</span></div>`;
+  if(K==='airy'&&L!=='cover'&&secs.length)chrome+=`<div class="idx">${secs.map((s,k)=>`<span${k===sec-1?' class="on"':''}>${esc(s)}</span>`).join('')}</div>`;
   if(K==='sig'){if(L!=='cover')chrome+=`<div class="strip"></div><div class="mark">${brand}</div>`;if(L==='statement'||L==='closing')chrome+='<div class="chev"><i></i><i></i><i></i></div>'}
   out.push(`<div class="pg L-${L} t-${tone}${K?' k-'+K:''}${st.t.grain?' grain':''}" style="${styleVars(st,acc)};--bg0:${bg};--fg0:${fgc};--deep:${deep}">${chrome}${inner}</div>`);
  });
@@ -356,7 +358,7 @@ async function learnStyle(){const [f]=await pick('application/pdf');if(!f)return
   const j=parseJSON(await callAI(`Study the attached reference document's visual style and describe it as a reusable presentation style.
 Return JSON: {"name":"2-3 word style name","desc":"one sentence on the look","bestFor":"kinds of brands and documents it suits","guide":"3 to 5 sentences on pacing, how dark/light/colour pages are used, headline tone, density, and how work is shown","t":{"dark":"#hex for dark pages","paper":"#hex for light pages","ink":"#hex text on light pages","accent":"#hex accent colour","hf":"closest heading font from: Archivo, Inter, Inter Tight, Fraunces, Space Grotesk, Montserrat, Oswald, Barlow Condensed","hs":"72% for condensed headings else 100%","hw":400 to 900,"hl":"letter spacing like -0.02em","hcase":"none or uppercase","ccase":"none or uppercase for cover title","bf":"Inter","r":corner radius 0 to 30,"grain":0 or 1,"cover":"dark, paper or accent","divider":"dark, paper or accent","content":"paper or dark","alt":"dark, paper or accent"}}`,'You are an art director who describes visual systems precisely. Return JSON only.',[data]));
   const s={id:'learned-'+uid(),name:j.name||f.name,desc:j.desc||'',bestFor:j.bestFor||'',guide:j.guide||'',t:Object.assign({},STYLES[0].t,j.t||{})};
-  if(!['Archivo','Inter','Inter Tight','Fraunces','Space Grotesk','Montserrat','Oswald','Barlow Condensed'].includes(s.t.hf))s.t.hf='Inter';s.t.bf='Inter';delete s.t.kit;
+  if(!['Archivo','Inter','Inter Tight','Fraunces','Space Grotesk','Montserrat','Oswald','Barlow Condensed','Anton','Outfit','Manrope'].includes(s.t.hf))s.t.hf='Inter';s.t.bf='Inter';delete s.t.kit;
   S.styles.push(s);save();route();toast('Learned "'+s.name+'". The generator can now pick it.')}catch(e){toast(e.message,1,9000)}}
 
 /* ---------- router ---------- */
