@@ -211,46 +211,64 @@ function thumb(p,doc){if(!doc)return `<div class="pthumb" style="display:grid;pl
 function fitThumbs(){$$('[data-thumb]').forEach(t=>{const pg=t.firstElementChild;if(pg)pg.style.transform=`scale(${t.clientWidth/1280})`})}
 function scaleDoc(){$$('.docw').forEach(d=>d.style.setProperty('--s',d.clientWidth/1280));fitThumbs()}
 addEventListener('resize',scaleDoc);
+const ARR='<svg class="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M8 7h9v9"/></svg>';
+const CHEV='<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+const ART={identity:'<circle cx="66" cy="58" r="36"/><path d="M66 26l7 24 24 8-24 8-7 24-7-24-24-8 24-8z"/>',
+guide:'<path d="M12 30c17-7 32-7 48 4 16-11 31-11 48-4v60c-17-7-32-7-48 4-16-11-31-11-48-4z"/><path d="M60 34v60M22 46h26M22 58h26M22 70h18M72 46h26M72 58h26"/>',
+proposal:'<rect x="30" y="10" width="62" height="86" rx="6"/><path d="M42 30h38M42 42h38M42 54h22"/><circle cx="86" cy="80" r="18"/><path d="M78 80l6 6 10-11"/>',
+pitch:'<path d="M10 98h102"/><rect x="20" y="66" width="18" height="32" rx="2"/><rect x="48" y="50" width="18" height="48" rx="2"/><rect x="76" y="32" width="18" height="66" rx="2"/><path d="M16 46l32-20 22 10 34-26"/><path d="M92 10h12v12"/>',
+logo:'<circle cx="46" cy="58" r="32"/><rect x="54" y="20" width="52" height="52" rx="6"/><path d="M26 102h84"/>',
+strategy:'<circle cx="58" cy="60" r="42"/><circle cx="58" cy="60" r="27"/><circle cx="58" cy="60" r="11"/><path d="M58 60l42-42M90 14h12v12"/>',
+brief:'<rect x="26" y="18" width="68" height="86" rx="6"/><rect x="44" y="9" width="32" height="16" rx="5"/><path d="M40 46h40M40 60h40M40 74h28"/>',
+case:'<rect x="8" y="26" width="56" height="44" rx="5"/><rect x="54" y="44" width="58" height="46" rx="5"/><path d="M18 60l12-12 12 9 14-15"/><circle cx="98" cy="58" r="5"/><path d="M64 80l14-12 12 10 12-8"/>'};
+const KICK={projects:'Workspace',documents:'Library',types:'Start here',styles:'Looks',settings:'Setup'};
 const NAV=[['home','Home','home'],['projects','Projects','folder'],['documents','Documents','doc'],['types','Document types','grid'],['styles','Styles','brush']];
 function shell(route,body){
  const init=(S.me.name||'Z S').split(/\s+/).map(x=>x[0]).join('').slice(0,2).toUpperCase();
- return `<div class="shell"><aside class="side"><div class="ws"><div class="wslogo">Z</div><div><b>Zyner Studio</b><small>${esc(S.me.agency||'Your workspace')}</small></div></div>
+ body=body.replace(/^<h1 class="ph">/,`<span class="stamp k">${KICK[route]||''}</span><h1 class="ph">`);
+ const cta=ai().key?`<div class="sidecta on"><span class="stamp">● AI writer on</span><span class="t">Using ${esc(ai().prov)}. Generate writes your copy.</span></div>`:`<div class="sidecta"><i class="ring"></i><i class="ring2"></i><span class="stamp">AI writer off</span><b>Get your copy written</b><span class="t">Add a free Gemini key and Generate writes the words for you.</span><a class="btn sm" href="#/settings">Add key ${ARR}</a></div>`;
+ return `<div class="shell"><aside class="side"><div class="ws"><b>Zyner</b><span class="stamp">Studio</span></div>
  <nav class="nav">${NAV.map(([r,l,i])=>`<a href="#/${r}" class="${route===r?'on':''}">${ic(i)}${l}</a>`).join('')}</nav>
  <div class="navh">Setup</div><nav class="nav"><a href="#/settings" class="${route==='settings'?'on':''}">${ic('gear')}Settings and AI</a></nav>
- <div class="sidecta"><b>${ic('zap',14)} ${ai().key?'AI writer on':'AI writer off'}</b><span>${ai().key?'Using '+ai().prov+'. Generate writes your copy.':'Add a free Gemini key to get written copy.'}</span>${ai().key?'':'<div style="margin-top:8px"><a class="btn sm" href="#/settings">Add key</a></div>'}</div></aside>
- <section class="main"><div class="top"><label class="search">${ic('search')}<input id="q" placeholder="Search projects and documents" value="${esc(route==='projects'?(new URLSearchParams(location.hash.split('?')[1]).get('q')||''):'')}"></label><button class="btn pri" data-new>${ic('plus',14)}<span class="lbl">New project</span></button><a class="av" href="#/settings">${esc(init)}</a></div>
+ ${cta}</aside>
+ <section class="main"><div class="top"><label class="search">${ic('search')}<input id="q" placeholder="Search projects and documents" value="${esc(route==='projects'?(new URLSearchParams(location.hash.split('?')[1]).get('q')||''):'')}"></label><div class="sp"></div><button class="btn pri" data-new>${ic('plus',14)}<span class="lbl">New project</span></button><a class="av" href="#/settings">${esc(init)}</a></div>
  <div class="wrap">${body}</div></section></div>
  <nav class="mnav">${[...NAV.slice(0,4),['settings','Settings','gear']].map(([r,l,i])=>`<a href="#/${r}" class="${route===r?'on':''}">${ic(i)}${{home:'Home',projects:'Projects',documents:'Docs',types:'Types',settings:'Settings'}[r]}</a>`).join('')}</nav>`}
 function bindShell(){$$('[data-new]').forEach(b=>b.onclick=()=>newModal(b.dataset.type));const q=$('#q');if(q)q.onkeydown=e=>{if(e.key==='Enter')location.hash='#/projects?q='+encodeURIComponent(q.value)}}
 
 /* ---------- screens ---------- */
-function typeCard(t){return `<div class="tcard" data-new data-type="${t.id}" style="background:linear-gradient(140deg,${t.tint},#141414 120%)"><i></i><b>${esc(t.name)}</b><small>${esc(t.short)}</small></div>`}
-function projCard(p){const d=p.docs.find(x=>x.id===p.current)||p.docs[0];return `<a class="pcard" href="#/p/${p.id}">${thumb(p,d)}<div class="pmeta"><b>${esc(p.name)}</b><small>${esc(typeBy(p.type).name)} · ${new Date(p.updated).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</small></div></a>`}
+function typeCard(t,i,full){return `<div class="tc c${i%3}" data-new data-type="${t.id}"><span class="stamp">${String(i+1).padStart(2,'0')}</span><b>${esc(t.name)}</b><small>${esc(t.short)}</small>${full&&t.guide?`<small class="g">${esc(t.guide)}</small>`:''}<svg class="art" viewBox="0 0 120 110">${ART[t.id]||ART.identity}</svg></div>`}
+const dShort=t=>new Date(t).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+function projCard(p){const d=p.docs.find(x=>x.id===p.current)||p.docs[0];return `<a class="pcard" href="#/p/${p.id}">${thumb(p,d)}<div class="pmeta"><b>${esc(p.name)}</b><div class="meta" style="margin:8px 0 0"><span class="tag">${esc(typeBy(p.type).name)}</span><span class="stamp">${dShort(p.updated)}</span></div></div></a>`}
+function railCard(p){const d=p.docs.find(x=>x.id===p.current)||p.docs[0];return `<a class="rc" href="#/p/${p.id}">${thumb(p,d)}<b>${esc(p.name)}</b><div class="meta"><span class="tag ${d?'g':''}">${d?d.pages.length+' pages':'No document yet'}</span><span class="stamp">${dShort(p.updated)}</span></div></a>`}
 function vHome(){
- const rec=[...S.projects].sort((a,b)=>b.updated-a.updated).slice(0,6);const demo=S.projects.find(p=>p.demo);const dd=demo&&(demo.docs[0]);
- return shell('home',`<div class="quick">
-  <button class="qa" data-new><div class="qi">${ic('plus')}</div><div><b>New document</b><small>Start from a document type</small></div></button>
-  <a class="qa" href="#/settings"><div class="qi">${ic('spark')}</div><div><b>AI writer</b><small>Connect Gemini, ChatGPT or Claude</small></div></a>
-  <a class="qa" href="#/styles"><div class="qi">${ic('brush')}</div><div><b>Learn a style</b><small>Teach it a look from a PDF</small></div></a>
-  <button class="qa" id="qImport"><div class="qi">${ic('upload')}</div><div><b>Open project file</b><small>Bring in a saved project</small></div></button></div>
- <div class="hero"><div><h1>Turn your brand thinking into a finished document</h1><p>Add what you know about the brand, upload the pieces you have, pick a document type, then generate. It picks a layout style that suits the brand and writes from your notes.</p><div class="row"><button class="btn pri" data-new>Get started</button>${demo?`<a class="btn ghost" href="#/p/${demo.id}">Open the demo</a>`:''}</div></div>
- <div class="heroart">${dd?[0,1,2].map(k=>dd.pages[k]?`<div class="pv" data-thumb style="width:${[300,260,230][k]}px;aspect-ratio:16/9;right:${[20,170,60][k]}px;top:${[90,10,150][k]}px;z-index:${3-k}">${renderPages(demo,{...dd,pages:[dd.pages[[0,3,8][k]]||dd.pages[k]]})[0]}</div>`:'').join(''):''}</div></div>
- <div class="sec"><h2>Start from a document type</h2><a class="btn sm ghost" href="#/types">All types</a></div>
- <div class="carousel">${DOCTYPES.map(typeCard).join('')}</div>
- <div class="sec"><h2>Recent projects</h2><a class="btn sm ghost" href="#/projects">All projects</a></div>
- ${rec.length?`<div class="grid">${rec.map(projCard).join('')}</div>`:'<div class="empty">No projects yet.</div>'}`)}
+ const rec=[...S.projects].sort((a,b)=>b.updated-a.updated).slice(0,4);const demo=S.projects.find(p=>p.demo);const dd=demo&&(demo.docs[0]);
+ const first=(S.me.name||'').trim().split(/\s+/)[0];
+ const art=dd?[0,1,2].map(k=>{const pg=dd.pages[[0,3,8][k]]||dd.pages[k];return pg?`<div class="pv" style="left:${[0,150,300][k]}px;top:${[92,46,0][k]}px;z-index:${k+1}"><span class="stamp ser">0${k+1} · ${esc(pg.label||(k?'Page':'Cover'))}</span><div class="pvi" data-thumb>${renderPages(demo,{...dd,pages:[pg]})[0]}</div></div>`:''}).join(''):'';
+ return shell('home',`<div class="hero"><div><p class="hi">${first?'Hey '+esc(first)+',':'Welcome to Zyner Studio'}</p><h1>Turn your brand thinking into a finished document</h1><p class="d">Add what you know about the brand, upload the pieces you have, pick a document type, then generate. It picks a layout that suits the brand and writes from your notes.</p><div class="row"><button class="btn pri" data-new>Start a document ${ARR}</button>${demo?`<a class="btn ghost" href="#/p/${demo.id}">Open the demo</a>`:''}</div></div>
+ <div class="heroart">${art}</div></div>
+ <div class="homeg"><div>
+ <div class="sec"><div><span class="stamp">${String(DOCTYPES.length).padStart(2,'0')} types</span><h2>Start from a document type</h2></div><a class="btn sm ghost" href="#/types">All types ${ARR}</a></div>
+ <div class="tcards">${DOCTYPES.map((t,i)=>typeCard(t,i)).join('')}</div>
+ <div class="sec"><div><span class="stamp">Shortcuts</span><h2>More ways in</h2></div></div>
+ <div class="rows">
+  <a class="rowi" href="#/styles"><span class="ri">${ic('brush')}</span><span class="rt"><b>Learn a style</b><small>Teach it a look from a brand book or deck you like</small></span><span class="stamp">PDF</span></a>
+  <button class="rowi" id="qImport"><span class="ri">${ic('upload')}</span><span class="rt"><b>Open a project file</b><small>Bring in a project you saved or someone sent you</small></span><span class="stamp">JSON</span></button>
+  <a class="rowi" href="#/styles"><span class="ri">${ic('grid')}</span><span class="rt"><b>Browse styles</b><small>See every look the generator can use</small></span><span class="stamp">${String(allStyles().length).padStart(2,'0')}</span></a>
+ </div></div>
+ <aside class="rail"><div class="railh"><h3>Recent projects</h3><a href="#/projects">See all</a></div><div class="rcs">${rec.length?rec.map(railCard).join(''):'<div class="empty">No projects yet.</div>'}</div></aside></div>`)}
 function vProjects(){const q=(new URLSearchParams(location.hash.split('?')[1]).get('q')||'').toLowerCase();const ps=[...S.projects].sort((a,b)=>b.updated-a.updated).filter(p=>!q||(p.name+' '+p.brand.name).toLowerCase().includes(q));
  return shell('projects',`<h1 class="ph">Projects</h1><p class="sub">Every brand you're working on. One project can produce many documents.</p>${ps.length?`<div class="grid">${ps.map(projCard).join('')}</div>`:`<div class="empty">${q?'Nothing matches that search.':'No projects yet.'}</div>`}`)}
 function vDocuments(){const ds=S.projects.flatMap(p=>p.docs.map(d=>({p,d}))).sort((a,b)=>b.d.at-a.d.at);
  return shell('documents',`<h1 class="ph">Documents</h1><p class="sub">Everything you've generated. Open one to edit text or download it as a PDF.</p>
- ${ds.length?`<div class="list">${ds.map(({p,d})=>`<div class="li">${thumb(p,d)}<div class="grow"><b>${esc(p.brand.name||p.name)} · ${esc(typeBy(d.type).name)}</b><div><span class="chipt">${esc(styleBy(d.style).name)}</span><span class="chipt">${d.pages.length} pages</span><small style="color:var(--mute)">${new Date(d.at).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</small></div></div><a class="btn sm" href="#/p/${p.id}?doc=${d.id}">Open</a><button class="btn sm" data-dl="${p.id}|${d.id}">${ic('dl',13)}</button></div>`).join('')}</div>`:'<div class="empty">Generate a document in a project and it shows up here.</div>'}`)}
-function vTypes(){return shell('types',`<h1 class="ph">Document types</h1><p class="sub">Pick what you're making. The same brand info works for all of them.</p><div class="grid">${DOCTYPES.map(t=>`<div class="pcard" data-new data-type="${t.id}"><div class="tcard" style="border-radius:0;background:linear-gradient(140deg,${t.tint},#141414 120%)"><i></i><b>${esc(t.name)}</b></div><div class="pmeta"><small style="font-size:12.5px">${esc(t.short)}</small><div style="margin-top:6px;color:#77726b;font-size:11.5px">${esc(t.guide)}</div></div></div>`).join('')}</div>`)}
+ ${ds.length?`<div class="list">${ds.map(({p,d})=>`<div class="li">${thumb(p,d)}<div class="grow"><b>${esc(p.brand.name||p.name)} · ${esc(typeBy(d.type).name)}</b><div><span class="chipt">${esc(styleBy(d.style).name)}</span><span class="chipt">${d.pages.length} pages</span><small class="stamp" style="color:var(--mute)">${new Date(d.at).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</small></div></div><a class="btn sm" href="#/p/${p.id}?doc=${d.id}">Open</a><button class="btn sm" data-dl="${p.id}|${d.id}">${ic('dl',13)}</button></div>`).join('')}</div>`:'<div class="empty">Generate a document in a project and it shows up here.</div>'}`)}
+function vTypes(){return shell('types',`<h1 class="ph">Document types</h1><p class="sub">Pick what you're making. The same brand info works for all of them.</p><div class="tgx">${DOCTYPES.map((t,i)=>typeCard(t,i,1)).join('')}</div>`)}
 const SAMPLE=()=>{const p=newProject({brand:{name:'Sample',tagline:'',about:'',problem:'',audience:'',perception:'',voice:''},meta:{title:'Brand Identity',author:'',agency:'',date:''}});return p};
 function vStyles(){const p=SAMPLE();
  return shell('styles',`<h1 class="ph">Styles</h1><p class="sub">The looks the generator can choose from. Each one is a written guide plus colours and type, so it can be learned from a reference PDF.</p>
  <div class="row" style="margin-bottom:16px;flex-wrap:wrap"><button class="btn pri" id="learn">${ic('upload',14)} Learn a style from a PDF</button><span class="hint" style="margin:0">Needs a Gemini key. Upload a brand book or deck you like.</span></div>
  <div class="grid">${allStyles().map(s=>{const d={type:'identity',style:s.id,accent:s.t.accent,pages:[{layout:'statement',label:'The idea',h:'A clear idea, told simply',b:'This is how body copy sits in this style. Short paragraphs, real reasons.'}]};
-  return `<div class="pcard" style="cursor:default">${thumb(p,d)}<div class="pmeta"><b>${esc(s.name)}${S.styles.includes(s)?' <span class="chipt">Learned</span>':''}</b><small>${esc(s.desc)}</small><div style="margin-top:6px;font-size:11.5px;color:#77726b">Best for: ${esc(s.bestFor)}</div>${S.styles.includes(s)?`<button class="btn sm" style="margin-top:8px" data-delst="${s.id}">Remove</button>`:''}</div></div>`}).join('')}</div>`)}
+  return `<div class="pcard" style="cursor:default">${thumb(p,d)}<div class="pmeta"><b>${esc(s.name)}${S.styles.includes(s)?' <span class="chipt">Learned</span>':''}</b><small>${esc(s.desc)}</small><div class="bf"><span class="stamp">Best for</span> ${esc(s.bestFor)}</div>${S.styles.includes(s)?`<button class="btn sm" style="margin-top:8px" data-delst="${s.id}">Remove</button>`:''}</div></div>`}).join('')}</div>`)}
 function vSettings(){const c=ai();return shell('settings',`<h1 class="ph">Settings and AI</h1><p class="sub">Keys stay on this device. They are never put into project files.</p>
  <div style="max-width:560px"><div class="two"><div><label class="l">Your name</label><input class="f" id="meName" value="${esc(S.me.name)}"></div><div><label class="l">Agency or studio</label><input class="f" id="meAg" value="${esc(S.me.agency)}"></div></div>
  <label class="l">AI provider</label><select class="f" id="prov"><option value="gemini">Google Gemini (free plan available)</option><option value="openai">OpenAI (ChatGPT)</option><option value="anthropic">Anthropic (Claude)</option></select>
@@ -274,15 +292,17 @@ function newModal(type){let sel=type||'identity';const m=$('#modal');
 let W={step:'brand',pid:''};
 function vWork(p){const docId=new URLSearchParams(location.hash.split('?')[1]).get('doc');if(docId&&p.docs.find(d=>d.id===docId))p.current=docId;
  const doc=p.docs.find(d=>d.id===p.current)||p.docs[0];
- return `<div class="wsp"><div class="wtop"><a class="btn sm ghost" href="#/projects">${ic('back',14)}</a><input class="name" id="pname" value="${esc(p.name)}">
- <select id="ptype" title="Document type">${DOCTYPES.map(t=>`<option value="${t.id}" ${t.id===p.type?'selected':''}>${esc(t.name)}</option>`).join('')}</select>
- <select id="pstyle" title="Style"><option value="auto">Style: let it choose</option>${allStyles().map(s=>`<option value="${s.id}" ${s.id===p.style?'selected':''}>Style: ${esc(s.name)}</option>`).join('')}</select>
- ${p.docs.length>1?`<select id="pver" title="Versions">${p.docs.map((d,k)=>`<option value="${d.id}" ${d.id===(doc&&doc.id)?'selected':''}>Version ${p.docs.length-k} · ${esc(typeBy(d.type).name)}</option>`).join('')}</select>`:''}
+ const sname=p.style==='auto'?'Let it choose':styleBy(p.style).name;
+ return `<div class="wsp"><div class="wtop"><a class="btn ghost bk" href="#/projects" title="Back to projects">${ic('back',15)}</a><input class="name" id="pname" value="${esc(p.name)}"><span class="sep"></span>
+ <label class="pill"><span class="stamp">Type</span><select id="ptype" title="Document type">${DOCTYPES.map(t=>`<option value="${t.id}" ${t.id===p.type?'selected':''}>${esc(t.name)}</option>`).join('')}</select>${CHEV}</label>
+ <button class="pill" id="pickstyle" title="Pick a style"><span class="stamp">Style</span><b id="stylename">${esc(sname)}</b>${CHEV}</button>
+ <select id="pstyle" hidden><option value="auto">Let it choose</option>${allStyles().map(s=>`<option value="${s.id}" ${s.id===p.style?'selected':''}>${esc(s.name)}</option>`).join('')}</select>
+ ${p.docs.length>1?`<label class="pill"><span class="stamp">Ver</span><select id="pver" title="Versions">${p.docs.map((d,k)=>`<option value="${d.id}" ${d.id===(doc&&doc.id)?'selected':''}>${p.docs.length-k} · ${esc(typeBy(d.type).name)}</option>`).join('')}</select>${CHEV}</label>`:''}
  <div style="flex:1"></div><button class="btn" id="gen">${ic('spark',14)} Generate</button><button class="btn pri" id="pdf" ${doc?'':'disabled'}>${ic('dl',14)} PDF</button></div>
  <div class="mobsw"><button class="st on" data-v="edit">Fill in</button><button class="st" data-v="prev">Document</button></div>
  <div class="wbody"><div class="phone"><div class="notch"><i></i></div><div class="steps" id="steps"></div><div class="pane" id="pane"></div>
  <div class="phfoot"><button class="btn" id="prevstep">Back</button><button class="btn pri" id="nextstep">Next</button></div></div>
- <div class="canvas">${doc?(doc.why?`<div class="why"><b>${esc(styleBy(doc.style).name)}</b> · ${esc(doc.why)}</div>`:''):''}<div class="docw" id="docw">${doc?renderPages(p,doc,true).map(x=>`<div class="pgwrap">${x}</div>`).join(''):`<div class="empty" style="margin-top:40px"><b style="color:#fff;font-size:16px">Fill in what you have, then Generate</b><br>Nothing is required. Empty sections are left out of the document.</div>`}</div></div></div></div>`}
+ <div class="canvas">${doc?(doc.why?`<div class="why"><span class="stamp">Style</span><b>${esc(styleBy(doc.style).name)}</b><span class="w">${esc(doc.why)}</span></div>`:''):''}<div class="docw" id="docw">${doc?renderPages(p,doc,true).map(x=>`<div class="pgwrap">${x}</div>`).join(''):`<div class="empty" style="margin-top:40px"><span class="stamp" style="color:var(--or2);display:block;margin-bottom:8px">Nothing generated yet</span><b style="color:#fff;font-size:18px;letter-spacing:-.02em">Fill in what you have, then Generate</b><br>Nothing is required. Empty sections are left out of the document.</div>`}</div></div></div></div>`}
 const STEPS=[['brand','Brand'],['pieces','Pieces'],['look','Colour & type'],['notes','Notes'],['details','Details'],['people','Credits']];
 function stepDone(p,s){const b=p.brand;return{brand:!!(b.name&&b.about),pieces:p.pieces.length>0,look:p.colours.length+p.fonts.length>0,notes:!!(p.notes||p.refs.length),details:p.details.length>0,people:!!(p.meta.author||p.meta.agency)}[s]}
 function bindWork(p){
@@ -290,6 +310,12 @@ function bindWork(p){
  const touch=()=>{p.updated=Date.now();save()};
  $('#pname').oninput=e=>{p.name=e.target.value;touch()};
  $('#ptype').onchange=e=>{p.type=e.target.value;touch();drawPane(p)};
+ $('#pickstyle').onclick=()=>{const m=$('#modal');const d0=p.docs.find(x=>x.id===p.current)||p.docs[0];const pg0=(d0&&d0.pages[0])||{layout:'cover'};
+  const tile=(id,name,desc,inner)=>`<button class="sopt ${p.style===id?'on':''}" data-sid="${id}">${inner}<span class="sm"><b>${esc(name)}</b><small>${esc(desc||'')}</small></span></button>`;
+  m.innerHTML=`<div class="mbox wide"><div class="mhd"><div><span class="stamp">${String(allStyles().length).padStart(2,'0')} styles</span><h3>Pick a style</h3><p class="hint" style="margin:6px 0 0">Every preview is your own cover in that style.</p></div><button class="btn sm ghost" id="sx">Close</button></div>
+  <div class="sgrid">${tile('auto','Let it choose','Picks the style that fits the brand and the document',`<div class="pthumb auto">${ic('spark',28)}</div>`)}${allStyles().map(s=>tile(s.id,s.name,s.bestFor||s.desc,`<div class="pthumb" data-thumb>${renderPages(p,{type:p.type,style:s.id,accent:(d0&&d0.accent)||'',pages:[pg0]})[0]}</div>`)).join('')}</div></div>`;
+  m.classList.add('on');fitThumbs();m.onclick=e=>{if(e.target===m)m.classList.remove('on')};$('#sx').onclick=()=>m.classList.remove('on');
+  $$('.sopt').forEach(b=>b.onclick=()=>{const sel=$('#pstyle');sel.value=b.dataset.sid;m.classList.remove('on');$('#stylename').textContent=b.querySelector('b').textContent;sel.dispatchEvent(new Event('change'))})};
  $('#pstyle').onchange=e=>{p.style=e.target.value;touch();const d=p.docs.find(x=>x.id===p.current);if(d&&e.target.value!=='auto'){d.style=e.target.value;touch();route()}};
  if($('#pver'))$('#pver').onchange=e=>{p.current=e.target.value;touch();route()};
  $('#gen').onclick=async()=>{const d=await generate(p,$('#gen'));if(d){route();document.body.classList.add('vprev')}};
@@ -302,7 +328,7 @@ function bindWork(p){
 }
 function fld(label,path,o={}){const v=path.split('.').reduce((a,k)=>a?.[k],o.obj)??'';return `<label class="l">${label}</label>${o.area?`<textarea class="f" data-f="${path}" placeholder="${esc(o.ph||'')}" ${o.rows?`style="min-height:${o.rows}px"`:''}>${esc(v)}</textarea>`:`<input class="f" data-f="${path}" value="${esc(v)}" placeholder="${esc(o.ph||'')}">`}`}
 function drawPane(p){
- $('#steps').innerHTML=STEPS.map(([k,l])=>`<button class="st ${W.step===k?'on':''}" data-s="${k}">${l}<span class="d ${stepDone(p,k)?'ok':''}"></span></button>`).join('');
+ $('#steps').innerHTML=STEPS.map(([k,l],n)=>`<button class="st ${W.step===k?'on':''}" data-s="${k}"><span class="n">0${n+1}<span class="d ${stepDone(p,k)?'ok':''}"></span></span>${l}</button>`).join('');
  $$('#steps .st').forEach(b=>b.onclick=()=>{W.step=b.dataset.s;drawPane(p)});
  $('#nextstep').textContent=W.step==='people'?'Generate':'Next';
  const o={obj:p};let h='';
